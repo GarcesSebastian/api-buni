@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import userRoutes from './routes/user.routes.js';
 
-
+config()
 const app = express();
 app.use(express.json());
 app.use(helmet());
