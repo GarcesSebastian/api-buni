@@ -3,14 +3,18 @@ import { config } from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import http from 'http';
 import userRoutes from './routes/user.routes.js';
+import { setupWebSocket } from './websocket.js';
 
-config()
+config();
 const app = express();
+const server = http.createServer(app);
+
 app.use(express.json());
 app.use(helmet());
 
-const allowedOrigins = process.env.CORS_ORIGINS.split(',');
+const allowedOrigins = process.env.CORS_ORIGINS?.split(',') || [];
 
 app.use(cors({
     origin: (origin, callback) => {
@@ -35,6 +39,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use('/users', userRoutes);
 
-app.listen(PORT, () => {
+setupWebSocket(server);
+
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
