@@ -2,15 +2,20 @@ import express from 'express';
 import { config } from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
+import multer from 'multer';
 import rateLimit from 'express-rate-limit';
 import http from 'http';
 import userRoutes from './routes/user.routes.js';
+import filesRoutes from './routes/files.routes.js';
 import { setupWebSocket } from './websocket.js';
 
 config();
 const app = express();
 const server = http.createServer(app);
 
+const upload = multer({ dest: "uploads/" });
+
+app.use(upload.single("file"));
 app.use(express.json());
 app.use(helmet());
 
@@ -38,6 +43,7 @@ app.use(limiter);
 const PORT = process.env.PORT || 3000;
 
 app.use('/users', userRoutes);
+app.use("/files", filesRoutes);
 
 setupWebSocket(server);
 
