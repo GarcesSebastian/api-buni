@@ -5,13 +5,6 @@ export const setupWebSocket = (server) => {
 
     wss.on("connection", (ws) => {
         console.log("Cliente conectado");
-
-        wss.clients.forEach(client => {
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
-                const data = { message: "Un nuevo usuario se ha conectado" }
-                client.send(JSON.stringify({ type: "USER_CONNECTED", payload: data }));
-            }
-        });
         
         ws.on("message", (message) => {
             console.log(`Mensaje recibido: ${message}`);

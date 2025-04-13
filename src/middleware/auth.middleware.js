@@ -8,7 +8,6 @@ export const verifyToken = (req, res, next) => {
             return res.status(401).json({ error: 'Token no proporcionado' });
         }
 
-        // El formato debe ser "Bearer <token>"
         const token = authHeader.split(' ')[1];
         
         if (!token) {

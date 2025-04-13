@@ -49,7 +49,6 @@ export const VerifySession = async (req, res) => {
             });
         }
 
-        // Si es un usuario normal, buscamos sus permisos
         const [customRole] = await pool.query('SELECT permissions FROM custom_roles WHERE name = ?', [user.role]);
         const permissions = customRole.length > 0 ? JSON.parse(customRole[0].permissions) : null;
 
