@@ -7,7 +7,7 @@ export const setupWebSocket = (server) => {
         console.log("Cliente conectado");
         
         ws.on("message", (message) => {
-            console.log(`Mensaje recibido: ${message}`);
+            // console.log(`Mensaje recibido: ${message}`);
 
             try {
                 const data = JSON.parse(message.toString());
