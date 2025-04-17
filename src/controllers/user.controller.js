@@ -49,7 +49,7 @@ export const VerifySession = async (req, res) => {
             });
         }
 
-        const [customRole] = await pool.query('SELECT permissions FROM custom_roles WHERE name = ?', [user.role]);
+        const [customRole] = await pool.query('SELECT permissions FROM roles WHERE name = ?', [user.role]);
         const permissions = customRole.length > 0 ? JSON.parse(customRole[0].permissions) : null;
 
         return res.json({
@@ -93,7 +93,7 @@ export const CreateCustomRole = async (req, res) => {
         }
 
         const [result] = await pool.query(
-            'INSERT INTO custom_roles (name, permissions) VALUES (?, ?)',
+            'INSERT INTO roles (name, permissions) VALUES (?, ?)',
             [name, JSON.stringify(permissionsJson)]
         );
 
@@ -111,7 +111,7 @@ export const CreateCustomRole = async (req, res) => {
 
 export const GetCustomRoles = async (req, res) => {
     try {
-        const [roles] = await pool.query('SELECT * FROM custom_roles');
+        const [roles] = await pool.query('SELECT * FROM roles');
         
         const formattedRoles = roles.map(role => ({
             id: role.id,
@@ -135,7 +135,8 @@ export const GetUsers = async (req, res) => {
             return res.status(403).json({ error: 'No tienes permisos para realizar esta acción' });
         }
 
-        const [users] = await pool.query('SELECT id, name, email, role, created_at FROM users');
+        const [users] = await pool.query('SELECT id, name, email, password, role_id FROM users');
+
         return res.json(users);
     } catch (error) {
         console.error(error);
@@ -145,9 +146,9 @@ export const GetUsers = async (req, res) => {
 
 export const CreateUser = async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password, roles } = req.body;
         
-        if (!name || !email || !password || !role) {
+        if (!name || !email || !password || !roles) {
             return res.status(400).json({ error: 'Todos los campos son requeridos' });
         }
 
@@ -156,20 +157,11 @@ export const CreateUser = async (req, res) => {
             return res.status(400).json({ error: 'El email ya está registrado' });
         }
 
-        if (role === ADMIN_ROLE) {
-            return res.status(403).json({ error: 'No se pueden crear usuarios administradores' });
-        }
-
-        const [customRole] = await pool.query('SELECT * FROM custom_roles WHERE name = ?', [role]);
-        if (customRole.length === 0) {
-            return res.status(400).json({ error: 'El rol especificado no existe' });
-        }
-
         const hashedPassword = await bcrypt.hash(password, 10);
 
         await pool.query(
-            'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)', 
-            [name, email, hashedPassword, role]
+            'INSERT INTO users (name, email, password, role_id) VALUES (?, ?, ?, ?)', 
+            [name, email, hashedPassword, roles.id]
         );
         
         return res.status(201).json({ 
@@ -177,7 +169,7 @@ export const CreateUser = async (req, res) => {
             user: {
                 name,
                 email,
-                role
+                role: roles.name
             }
         });
     } catch (error) {
@@ -227,8 +219,8 @@ export const Login = async (req, res) => {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
-        const [customRole] = await pool.query('SELECT permissions FROM custom_roles WHERE name = ?', [user.role]);
-        const permissions = customRole.length > 0 ? JSON.parse(customRole[0].permissions) : null;
+        const [role] = await pool.query('SELECT permissions FROM roles WHERE id = ?', [user.role_id]);
+        const permissions = role.length > 0 ? JSON.parse(role[0].permissions) : null;
 
         const token = jwt.sign(
             { 
@@ -305,24 +297,21 @@ export const UpdateCustomRole = async (req, res) => {
             return res.status(400).json({ error: 'Los permisos deben ser un objeto' });
         }
 
-        // Verificar si el rol existe
-        const [existingRole] = await pool.query('SELECT * FROM custom_roles WHERE id = ?', [id]);
+        const [existingRole] = await pool.query('SELECT * FROM roles WHERE id = ?', [id]);
         if (existingRole.length === 0) {
             return res.status(404).json({ error: 'Rol no encontrado' });
         }
 
-        // Verificar si el nuevo nombre ya existe (excluyendo el rol actual)
         const [existingName] = await pool.query(
-            'SELECT * FROM custom_roles WHERE name = ? AND id != ?',
+            'SELECT * FROM roles WHERE name = ? AND id != ?',
             [name, id]
         );
         if (existingName.length > 0) {
             return res.status(400).json({ error: 'Ya existe un rol con ese nombre' });
         }
 
-        // Actualizar el rol
         await pool.query(
-            'UPDATE custom_roles SET name = ?, permissions = ? WHERE id = ?',
+            'UPDATE roles SET name = ?, permissions = ? WHERE id = ?',
             [name, JSON.stringify(permissionsJson), id]
         );
 
@@ -342,16 +331,16 @@ export const DeleteCustomRole = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Verificar si el rol existe
-        const [existingRole] = await pool.query('SELECT * FROM custom_roles WHERE id = ?', [id]);
+        console.log(id)
+
+        const [existingRole] = await pool.query('SELECT * FROM roles WHERE id = ?', [id]);
         if (existingRole.length === 0) {
             return res.status(404).json({ error: 'Rol no encontrado' });
         }
 
-        // Verificar si hay usuarios usando este rol
         const [usersWithRole] = await pool.query(
-            'SELECT COUNT(*) as count FROM users WHERE role = ?',
-            [existingRole[0].name]
+            'SELECT COUNT(*) as count FROM users WHERE role_id = ?',
+            [existingRole[0].id]
         );
 
         if (usersWithRole[0].count > 0) {
@@ -360,8 +349,7 @@ export const DeleteCustomRole = async (req, res) => {
             });
         }
 
-        // Eliminar el rol
-        await pool.query('DELETE FROM custom_roles WHERE id = ?', [id]);
+        await pool.query('DELETE FROM roles WHERE id = ?', [id]);
 
         return res.json({ 
             message: 'Rol eliminado exitosamente',

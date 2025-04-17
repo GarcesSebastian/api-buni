@@ -7,6 +7,8 @@ import rateLimit from 'express-rate-limit';
 import http from 'http';
 import userRoutes from './routes/user.routes.js';
 import filesRoutes from './routes/files.routes.js';
+import authRoutes from './routes/auth.routes.js';
+import rolesRoutes from './routes/roles.routes.js';
 import { setupWebSocket } from './websocket.js';
 
 config();
@@ -42,8 +44,10 @@ app.use(limiter);
 
 const PORT = process.env.PORT || 3000;
 
-app.use('/users', userRoutes);
+app.use("/users", userRoutes);
 app.use("/files", filesRoutes);
+app.use("/auth", authRoutes);
+app.use("/roles", rolesRoutes);
 
 setupWebSocket(server);
 
