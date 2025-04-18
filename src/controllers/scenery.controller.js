@@ -2,7 +2,7 @@ import { pool } from '../database/config.js';
 
 export const GetSceneries = async (req, res) => {
     try {
-        const [sceneries] = await pool.query('SELECT id, name, state FROM Scenery');
+        const [sceneries] = await pool.query('SELECT id, name, state FROM scenery');
         res.json(sceneries);
     } catch (error) {
         console.error(error);
@@ -18,13 +18,13 @@ export const CreateScenery = async (req, res) => {
             return res.status(400).json({ error: 'Todos los campos son requeridos' });
         }
 
-        const [existingScenery] = await pool.query('SELECT * FROM Scenery WHERE name = ?', [name]);
+        const [existingScenery] = await pool.query('SELECT * FROM scenery WHERE name = ?', [name]);
         if (existingScenery.length > 0) {
             return res.status(400).json({ error: 'El escenario ya existe' });
         }
 
         const [result] = await pool.query(
-            'INSERT INTO Scenery (name, state) VALUES (?, ?)',
+            'INSERT INTO scenery (name, state) VALUES (?, ?)',
             [name, state]
         );
 
@@ -48,7 +48,7 @@ export const UpdateScenery = async (req, res) => {
         }
 
         const [result] = await pool.query(
-            'UPDATE Scenery SET name = ?, state = ? WHERE id = ?',
+            'UPDATE scenery SET name = ?, state = ? WHERE id = ?',
             [name, state, id]
         );
 
@@ -67,7 +67,7 @@ export const DeleteScenery = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const [result] = await pool.query('DELETE FROM Scenery WHERE id = ?', [id]);
+        const [result] = await pool.query('DELETE FROM scenery WHERE id = ?', [id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'Escenario no encontrado' });

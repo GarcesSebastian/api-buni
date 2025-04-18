@@ -2,7 +2,7 @@ import { pool } from '../database/config.js';
 
 export const GetFaculties = async (req, res) => {
     try {
-        const [faculties] = await pool.query('SELECT id, name, state FROM Faculty');
+        const [faculties] = await pool.query('SELECT id, name, state FROM faculty');
         res.json(faculties);
     } catch (error) {
         console.error(error);
@@ -18,13 +18,13 @@ export const CreateFaculty = async (req, res) => {
             return res.status(400).json({ error: 'Todos los campos son requeridos' });
         }
 
-        const [existingFaculty] = await pool.query('SELECT * FROM Faculty WHERE name = ?', [name]);
+        const [existingFaculty] = await pool.query('SELECT * FROM faculty WHERE name = ?', [name]);
         if (existingFaculty.length > 0) {
             return res.status(400).json({ error: 'La facultad ya existe' });
         }
 
         const [result] = await pool.query(
-            'INSERT INTO Faculty (name, state) VALUES (?, ?)',
+            'INSERT INTO faculty (name, state) VALUES (?, ?)',
             [name, state]
         );
 
@@ -48,7 +48,7 @@ export const UpdateFaculty = async (req, res) => {
         }
 
         const [result] = await pool.query(
-            'UPDATE Faculty SET name = ?, state = ? WHERE id = ?',
+            'UPDATE faculty SET name = ?, state = ? WHERE id = ?',
             [name, state, id]
         );
 
@@ -67,7 +67,7 @@ export const DeleteFaculty = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const [result] = await pool.query('DELETE FROM Faculty WHERE id = ?', [id]);
+        const [result] = await pool.query('DELETE FROM faculty WHERE id = ?', [id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'Facultad no encontrada' });
