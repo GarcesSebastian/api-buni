@@ -1,5 +1,25 @@
 import { pool } from '../database/config.js';
 
+export const GetCustomRoles = async (req, res) => {
+    try {
+        const [roles] = await pool.query('SELECT * FROM roles');
+        
+        const formattedRoles = roles.map(role => ({
+            id: role.id,
+            name: role.name,
+            permissions: typeof role.permissions === 'string' 
+                ? JSON.parse(role.permissions) 
+                : role.permissions,
+            created_at: role.created_at
+        }));
+
+        return res.json(formattedRoles);
+    } catch (error) {
+        console.error('Error al obtener roles:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 export const CreateCustomRole = async (req, res) => {
     try {
         const { name, permissions } = req.body;
@@ -21,6 +41,11 @@ export const CreateCustomRole = async (req, res) => {
             return res.status(400).json({ error: 'Los permisos deben ser un objeto' });
         }
 
+        const [existingRole] = await pool.query('SELECT * FROM roles WHERE name = ?', [name]);
+        if (existingRole.length > 0) {
+            return res.status(400).json({ error: 'Ya existe un rol con ese nombre' });
+        }
+
         const [result] = await pool.query(
             'INSERT INTO roles (name, permissions) VALUES (?, ?)',
             [name, JSON.stringify(permissionsJson)]
@@ -34,26 +59,6 @@ export const CreateCustomRole = async (req, res) => {
         });
     } catch (error) {
         console.error('Error al crear rol:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
-    }
-};
-
-export const GetCustomRoles = async (req, res) => {
-    try {
-        const [roles] = await pool.query('SELECT * FROM roles');
-        
-        const formattedRoles = roles.map(role => ({
-            id: role.id,
-            name: role.name,
-            permissions: typeof role.permissions === 'string' 
-                ? JSON.parse(role.permissions) 
-                : role.permissions,
-            created_at: role.created_at
-        }));
-
-        return res.json(formattedRoles);
-    } catch (error) {
-        console.error('Error al obtener roles:', error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 };
@@ -89,6 +94,7 @@ export const UpdateCustomRole = async (req, res) => {
             'SELECT * FROM roles WHERE name = ? AND id != ?',
             [name, id]
         );
+
         if (existingName.length > 0) {
             return res.status(400).json({ error: 'Ya existe un rol con ese nombre' });
         }
@@ -114,7 +120,9 @@ export const DeleteCustomRole = async (req, res) => {
     try {
         const { id } = req.params;
 
-        console.log(id)
+        if (!id) {
+            return res.status(400).json({ error: 'El ID del rol es requerido' });
+        }
 
         const [existingRole] = await pool.query('SELECT * FROM roles WHERE id = ?', [id]);
         if (existingRole.length === 0) {

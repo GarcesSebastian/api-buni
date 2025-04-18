@@ -1,5 +1,6 @@
 import { pool } from '../database/config.js';
 import { ADMIN_ROLE } from '../config/admin.js';
+import bcrypt from 'bcrypt';
 
 const isAdmin = (user) => {
     return user.role === ADMIN_ROLE;
@@ -40,14 +41,49 @@ export const CreateUser = async (req, res) => {
             [name, email, hashedPassword, roles.id]
         );
         
-        return res.status(201).json({ 
-            message: 'Usuario creado exitosamente',
-            user: {
-                name,
-                email,
-                role: roles.name
-            }
-        });
+        return res.status(201).json({ message: 'Usuario creado exitosamente'});
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+export const UpdateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, email, password, roles } = req.body;
+
+        console.log(id, name, email, password, roles);
+
+        if (!name || !email || !password || !roles) {
+            return res.status(400).json({ error: 'Todos los campos son requeridos' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await pool.query(
+            'UPDATE users SET name = ?, email = ?, password = ?, role_id = ? WHERE id = ?',
+            [name, email, hashedPassword, roles.id, id]
+        );
+
+        return res.json({ message: 'Usuario actualizado exitosamente' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+export const DeleteUser = async (req, res) => { 
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ error: 'El ID del usuario es requerido' });
+        }
+
+        await pool.query('DELETE FROM users WHERE id = ?', [id]);   
+
+        return res.json({ message: 'Usuario eliminado exitosamente' });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Internal Server Error' });
