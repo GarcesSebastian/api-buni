@@ -43,12 +43,12 @@ export const getEventById = async (id) => {
             ...eventData,
             fecha: eventData.fecha.toISOString().split('T')[0],
             hora: eventData.hora.slice(0, 5),
-            scenery: JSON.parse(eventData.scenery),
-            faculty: JSON.parse(eventData.faculty),
-            formAssists: JSON.parse(eventData.formAssists),
-            formInscriptions: JSON.parse(eventData.formInscriptions),
-            assists: JSON.parse(eventData.assists),
-            inscriptions: JSON.parse(eventData.inscriptions)
+            scenery: typeof eventData.scenery === 'string' ? JSON.parse(eventData.scenery) : eventData.scenery,
+            faculty: typeof eventData.faculty === 'string' ? JSON.parse(eventData.faculty) : eventData.faculty,
+            formAssists: typeof eventData.formAssists === 'string' ? JSON.parse(eventData.formAssists) : eventData.formAssists,
+            formInscriptions: typeof eventData.formInscriptions === 'string' ? JSON.parse(eventData.formInscriptions) : eventData.formInscriptions,
+            assists: typeof eventData.assists === 'string' ? JSON.parse(eventData.assists) : eventData.assists,
+            inscriptions: typeof eventData.inscriptions === 'string' ? JSON.parse(eventData.inscriptions) : eventData.inscriptions
         };
     } catch (error) {
         console.error('Error en getEventById:', error);
