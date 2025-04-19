@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 
 export const getUsers = async () => {
     try {
-        const [users] = await pool.query('SELECT id, name, email, role_id FROM users');
+        const [users] = await pool.query('SELECT id, name, email, password, role_id FROM users');
         return users;
     } catch (error) {
         console.error('Error en getUsers:', error);
