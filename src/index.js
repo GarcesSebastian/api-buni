@@ -14,6 +14,7 @@ import rolesRoutes from './routes/roles.routes.js';
 import sceneryRoutes from './routes/scenery.routes.js';
 import facultyRoutes from './routes/faculty.routes.js';
 import formsRoutes from './routes/forms.routes.js';
+import experimentalRoutes from './routes/experimental.routes.js';
 import { setupWebSocket } from './websocket.js';
 
 config();
@@ -58,6 +59,7 @@ app.use("/roles", rolesRoutes);
 app.use("/scenery", sceneryRoutes);
 app.use("/faculty", facultyRoutes);
 app.use("/forms", formsRoutes);
+app.use("/experimental", experimentalRoutes);
 
 setupWebSocket(server);
 
