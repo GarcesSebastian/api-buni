@@ -37,7 +37,7 @@ export const VerifySession = async (req, res) => {
         }
 
         const [customRole] = await pool.query('SELECT permissions FROM roles WHERE name = ?', [user.role]);
-        const permissions = customRole.length > 0 ? JSON.parse(customRole[0].permissions) : null;
+        const permissions = customRole.length > 0 ? typeof customRole[0].permissions === 'string' ? JSON.parse(customRole[0].permissions) : customRole[0].permissions : null;
 
         return res.json({
             valid: true,
@@ -103,7 +103,7 @@ export const Login = async (req, res) => {
         }
 
         const [role] = await pool.query('SELECT name, permissions FROM roles WHERE id = ?', [user.role_id]);
-        const permissions = role.length > 0 ? JSON.parse(role[0].permissions) : null;
+        const permissions = role.length > 0 ? typeof role[0].permissions === 'string' ? JSON.parse(role[0].permissions) : role[0].permissions : null;
 
         const userData = {
             id: user.id,
