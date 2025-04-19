@@ -1,3 +1,5 @@
+import XLSX from "xlsx";
+import path from 'path';
 import { pool } from '../database/config.js';
 
 export const getEvents = async () => {
@@ -159,6 +161,43 @@ export const updateEvent = async (id, eventData) => {
             throw error;
         }
         throw new Error('Error al actualizar el evento en la base de datos');
+    }
+};
+
+export const updateEventForm = async (id, formData) => {
+    try {
+        if (!id || !formData) {
+            throw new Error('Los campos formulario son requeridos');
+        }
+
+        const [event] = await pool.query('SELECT * FROM events WHERE id = ?', [id]);
+
+        if (event.length === 0) {
+            throw new Error('Evento no encontrado');
+        }
+        
+        const eventData = event[0];
+
+        if (formData.typeForm === "inscriptions") {
+            const { typeForm, ...rest } = formData
+            eventData.inscriptions = [...JSON.parse(eventData.inscriptions), rest]
+        }
+
+        if (formData.typeForm === "assists") {
+            const { typeForm, ...rest } = formData
+            eventData.assists = [...JSON.parse(eventData.assists), rest]
+        }
+        
+        const result = await pool.query('UPDATE events SET inscriptions = ?, assists = ? WHERE id = ?', [JSON.stringify(eventData.inscriptions), JSON.stringify(eventData.assists), id])
+
+        if (result.affectedRows === 0) {
+            throw new Error('Evento no encontrado');
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error en updateEventForm:', error);
+        throw error;
     }
 };
 

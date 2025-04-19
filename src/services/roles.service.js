@@ -11,7 +11,7 @@ export const getRoles = async () => {
         }));
     } catch (error) {
         console.error('Error en getRoles:', error);
-        throw new Error('Error al obtener los roles de la base de datos');
+        throw error;
     }
 };
 
@@ -39,10 +39,7 @@ export const createRole = async (name, permissions) => {
         };
     } catch (error) {
         console.error('Error en createRole:', error);
-        if (error.message.includes('requeridos') || error.message.includes('ya existe')) {
-            throw error;
-        }
-        throw new Error('Error al crear el rol en la base de datos');
+        throw error;
     }
 };
 
@@ -79,10 +76,7 @@ export const updateRole = async (id, name, permissions) => {
         };
     } catch (error) {
         console.error('Error en updateRole:', error);
-        if (error.message.includes('requeridos') || error.message.includes('no encontrado') || error.message.includes('ya existe')) {
-            throw error;
-        }
-        throw new Error('Error al actualizar el rol en la base de datos');
+        throw error;
     }
 };
 
@@ -114,9 +108,6 @@ export const deleteRole = async (id) => {
         };
     } catch (error) {
         console.error('Error en deleteRole:', error);
-        if (error.message.includes('requerido') || error.message.includes('no encontrado') || error.message.includes('utilizando')) {
-            throw error;
-        }
-        throw new Error('Error al eliminar el rol de la base de datos');
+        throw error;
     }
 }; 

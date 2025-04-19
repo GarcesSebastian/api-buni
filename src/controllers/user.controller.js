@@ -3,6 +3,7 @@ import { getUsers, createUser, updateUser, deleteUser } from '../services/user.s
 import { getEvents } from '../services/events.service.js';
 import { getFaculties } from '../services/faculty.service.js';
 import { getSceneries } from '../services/scenery.service.js';
+import { getForms } from '../services/forms.service.js';
 import { pool } from '../database/config.js';
 
 const isAdmin = (user) => {
@@ -36,6 +37,7 @@ export const GetUserData = async (req, res) => {
             faculty: await getFaculties(),
             scenery: await getSceneries(),
             users: await getUsers(),
+            forms: await getForms(),
             roles: roles.map(role => ({
                 ...role,
                 permissions: typeof role.permissions === 'string' ? JSON.parse(role.permissions) : role.permissions

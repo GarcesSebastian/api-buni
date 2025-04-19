@@ -1,4 +1,4 @@
-import { getEvents, getEventById, createEvent, updateEvent, deleteEvent } from '../services/events.service.js';
+import { getEvents, getEventById, createEvent, updateEvent, deleteEvent, updateEventForm } from '../services/events.service.js';
 
 export const GetEvents = async (req, res) => {
     try {
@@ -37,6 +37,16 @@ export const UpdateEvent = async (req, res) => {
     try {
         await updateEvent(req.params.id, req.body);
         res.json({ message: 'Evento actualizado exitosamente' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const UpdateEventForm = async (req, res) => {
+    try {
+        await updateEventForm(req.params.id, req.body);
+        res.json({ message: 'Formulario actualizado exitosamente' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });

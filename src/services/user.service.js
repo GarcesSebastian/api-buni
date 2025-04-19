@@ -19,9 +19,14 @@ export const createUser = async (userData) => {
             throw new Error('Todos los campos son requeridos');
         }
 
-        const [existingUser] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
-        if (existingUser.length > 0) {
+        const [existingEmail] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
+        if (existingEmail.length > 0) {
             throw new Error('El email ya está registrado');
+        }
+
+        const [existingName] = await pool.query('SELECT id FROM users WHERE name = ?', [name]);
+        if (existingName.length > 0) {
+            throw new Error('El nombre ya está registrado');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
