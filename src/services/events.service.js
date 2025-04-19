@@ -9,12 +9,12 @@ export const getEvents = async () => {
                 ...eventData,
                 fecha: event.fecha.toISOString().split('T')[0],
                 hora: event.hora.slice(0, 5),
-                scenery: JSON.parse(event.scenery),
-                faculty: JSON.parse(event.faculty),
-                formAssists: JSON.parse(event.formAssists),
-                formInscriptions: JSON.parse(event.formInscriptions),
-                assists: JSON.parse(event.assists),
-                inscriptions: JSON.parse(event.inscriptions)
+                scenery: typeof event.scenery === 'string' ? JSON.parse(event.scenery) : event.scenery,
+                faculty: typeof event.faculty === 'string' ? JSON.parse(event.faculty) : event.faculty,
+                formAssists: typeof event.formAssists === 'string' ? JSON.parse(event.formAssists) : event.formAssists,
+                formInscriptions: typeof event.formInscriptions === 'string' ? JSON.parse(event.formInscriptions) : event.formInscriptions,
+                assists: typeof event.assists === 'string' ? JSON.parse(event.assists) : event.assists,
+                inscriptions: typeof event.inscriptions === 'string' ? JSON.parse(event.inscriptions) : event.inscriptions
             };
         });
     } catch (error) {
