@@ -2,7 +2,7 @@ import { pool } from '../database/config.js';
 
 export const getEvents = async () => {
     try {
-        const [events] = await pool.query('SELECT id, nombre, organizador, scenery, faculty, cupos, fecha, hora, state, formAssists, formInscriptions, assists, inscriptions FROM events');
+        const [events] = await pool.query('SELECT * FROM events');
         return events.map(event => {
             const { created_at, ...eventData } = event;
             return {
