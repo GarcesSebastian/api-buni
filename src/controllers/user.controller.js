@@ -51,7 +51,7 @@ export const GetUserData = async (req, res) => {
 
 export const CreateUser = async (req, res) => {
     try {
-        const userId = await createUser(req.body);
+        await createUser(req.body);
         return res.status(201).json({ message: 'Usuario creado exitosamente' });
     } catch (error) {
         console.error(error);
