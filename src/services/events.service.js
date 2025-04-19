@@ -180,12 +180,14 @@ export const updateEventForm = async (id, formData) => {
 
         if (formData.typeForm === "inscriptions") {
             const { typeForm, ...rest } = formData
-            eventData.inscriptions = [...JSON.parse(eventData.inscriptions), rest]
+            const inscriptions = typeof eventData.inscriptions === "string" ? JSON.parse(eventData.inscriptions) : eventData.inscriptions
+            eventData.inscriptions = [...inscriptions, rest]
         }
 
         if (formData.typeForm === "assists") {
             const { typeForm, ...rest } = formData
-            eventData.assists = [...JSON.parse(eventData.assists), rest]
+            const assists = typeof eventData.assists === "string" ? JSON.parse(eventData.assists) : eventData.assists
+            eventData.assists = [...assists, rest]
         }
         
         const result = await pool.query('UPDATE events SET inscriptions = ?, assists = ? WHERE id = ?', [JSON.stringify(eventData.inscriptions), JSON.stringify(eventData.assists), id])
