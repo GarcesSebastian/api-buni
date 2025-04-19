@@ -38,7 +38,7 @@ export const GetUserData = async (req, res) => {
             users: await getUsers(),
             roles: roles.map(role => ({
                 ...role,
-                permissions: JSON.parse(role.permissions)
+                permissions: typeof role.permissions === 'string' ? JSON.parse(role.permissions) : role.permissions
             }))
         };
 
