@@ -1,40 +1,42 @@
-import { pool } from '../database/config.js';
+import { getSceneries, getSceneryById, createScenery, updateScenery, deleteScenery } from '../services/scenery.service.js';
 
 export const GetSceneries = async (req, res) => {
     try {
-        const [sceneries] = await pool.query('SELECT id, name, state FROM scenery');
+        const sceneries = await getSceneries();
         res.json(sceneries);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error al obtener los escenarios' });
+        console.error('Error al obtener escenarios:', error);
+        res.status(500).json({ error: error.message || 'Error al obtener los escenarios' });
     }
 };
+
+export const GetSceneryById = async (req, res) => {
+    try {
+        const scenery = await getSceneryById(req.params.id);
+        res.json(scenery);
+    } catch (error) {
+        console.error('Error al obtener escenario:', error);
+        res.status(500).json({ error: error.message || 'Error al obtener el escenario' });
+    }
+};
+
 
 export const CreateScenery = async (req, res) => {
     try {
         const { name, state } = req.body;
-
+        
         if (!name || !state) {
             return res.status(400).json({ error: 'Todos los campos son requeridos' });
         }
 
-        const [existingScenery] = await pool.query('SELECT * FROM scenery WHERE name = ?', [name]);
-        if (existingScenery.length > 0) {
-            return res.status(400).json({ error: 'El escenario ya existe' });
-        }
-
-        const [result] = await pool.query(
-            'INSERT INTO scenery (name, state) VALUES (?, ?)',
-            [name, state]
-        );
-
-        res.status(201).json({ 
-            message: 'Escenario creado exitosamente',
-            id: result.insertId 
-        });
+        const scenery = await createScenery(name, state);
+        res.status(201).json(scenery);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error al crear el escenario' });
+        console.error('Error al crear escenario:', error);
+        if (error.message.includes('requeridos') || error.message.includes('ya existe')) {
+            return res.status(400).json({ error: error.message });
+        }
+        res.status(500).json({ error: error.message || 'Error al crear el escenario' });
     }
 };
 
@@ -47,19 +49,14 @@ export const UpdateScenery = async (req, res) => {
             return res.status(400).json({ error: 'Todos los campos son requeridos' });
         }
 
-        const [result] = await pool.query(
-            'UPDATE scenery SET name = ?, state = ? WHERE id = ?',
-            [name, state, id]
-        );
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: 'Escenario no encontrado' });
-        }
-
-        res.json({ message: 'Escenario actualizado exitosamente' });
+        const scenery = await updateScenery(id, name, state);
+        res.json(scenery);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error al actualizar el escenario' });
+        console.error('Error al actualizar escenario:', error);
+        if (error.message.includes('requeridos') || error.message.includes('no encontrado')) {
+            return res.status(400).json({ error: error.message });
+        }
+        res.status(500).json({ error: error.message || 'Error al actualizar el escenario' });
     }
 };
 
@@ -67,15 +64,17 @@ export const DeleteScenery = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const [result] = await pool.query('DELETE FROM scenery WHERE id = ?', [id]);
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: 'Escenario no encontrado' });
+        if (!id) {
+            return res.status(400).json({ error: 'El ID del escenario es requerido' });
         }
 
-        res.json({ message: 'Escenario eliminado exitosamente' });
+        const result = await deleteScenery(id);
+        res.json(result);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error al eliminar el escenario' });
+        console.error('Error al eliminar escenario:', error);
+        if (error.message.includes('no encontrado')) {
+            return res.status(400).json({ error: error.message });
+        }
+        res.status(500).json({ error: error.message || 'Error al eliminar el escenario' });
     }
 }; 

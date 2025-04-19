@@ -2,32 +2,24 @@ import { pool } from '../database/config.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { ADMIN_ROLE } from '../config/admin.js';
+import { getUsers } from '../services/user.service.js';
 
 export const VerifySession = async (req, res) => {
     try {
         const { token } = req.body;
         
         if (!token) {
-            return res.status(401).json({ 
-                valid: false,
-                error: 'Token no proporcionado' 
-            });
+            return res.status(401).json({ error: 'Token no proporcionado' });
         }
 
         if (typeof token !== 'string') {
             console.error('Token no es un string:', token);
-            return res.status(401).json({ 
-                valid: false,
-                error: 'Formato de token inválido' 
-            });
+            return res.status(401).json({ error: 'Formato de token inválido' });
         }
 
         if (!token.match(/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$/)) {
             console.error('Token malformado:', token);
-            return res.status(401).json({ 
-                valid: false,
-                error: 'Token malformado' 
-            });
+            return res.status(401).json({ error: 'Token malformado' });
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -57,12 +49,14 @@ export const VerifySession = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error al verificar token:', error);
-        return res.status(401).json({ 
-            valid: false,
-            error: 'Token inválido',
-            details: error.message
-        });
+        console.error('Error al verificar sesión:', error);
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ error: 'Token inválido' });
+        }
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ error: 'Token expirado' });
+        }
+        return res.status(500).json({ error: error.message || 'Error al verificar la sesión' });
     }
 };
 
@@ -96,13 +90,12 @@ export const Login = async (req, res) => {
             });
         }
 
-        const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+        const users = await getUsers();
+        const user = users.find(u => u.email === email);
 
-        if (users.length === 0) {
+        if (!user) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
-
-        const user = users[0];
 
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
@@ -131,8 +124,8 @@ export const Login = async (req, res) => {
             user: userData
         });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error al iniciar sesión:', error);
+        return res.status(500).json({ error: error.message || 'Error al iniciar sesión' });
     }
 };
 
