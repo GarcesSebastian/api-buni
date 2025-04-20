@@ -13,6 +13,58 @@ export const getForms = async () => {
     }
 };
 
+export const getFormData = async (eventId, typeForm) => {
+    try {
+        const [event] = await pool.query('SELECT * FROM events WHERE id = ?', [eventId])
+
+        if (event.length === 0) {
+            throw new Error('Evento no encontrado');
+        }
+
+        const eventFormatted = {
+            ...event[0],
+            fecha: event[0].fecha.toISOString().split('T')[0],
+            hora: event[0].hora.slice(0, 5),
+            scenery: typeof event[0].scenery === 'string' ? JSON.parse(event[0].scenery) : event[0].scenery,
+            faculty: typeof event[0].faculty === 'string' ? JSON.parse(event[0].faculty) : event[0].faculty,
+            assists: undefined,
+            inscriptions: undefined,
+            formAssists: typeof event[0].formAssists === 'string' ? JSON.parse(event[0].formAssists) : event[0].formAssists,
+            formInscriptions: typeof event[0].formInscriptions === 'string' ? JSON.parse(event[0].formInscriptions) : event[0].formInscriptions
+        }
+
+        const sceneryId = eventFormatted.scenery.id
+        const [scenery] = await pool.query('SELECT * FROM scenery WHERE id = ?', [sceneryId])
+
+        if (scenery.length === 0) {
+            throw new Error('Escenario no encontrado');
+        }
+
+        const formId = eventFormatted[typeForm].id
+        const [form] = await pool.query('SELECT * FROM forms WHERE id = ?', [formId])
+
+        if (form.length === 0) {
+            throw new Error('Formulario no encontrado');
+        }
+
+        const payload = {
+            event: eventFormatted,
+            form: {
+                ...form[0],
+                fields: typeof form[0].fields === 'string' ? JSON.parse(form[0].fields) : form[0].fields
+            },
+            scenery: scenery[0]
+        }
+        
+
+        return payload
+    } catch (error) {
+        console.error('Error en getFormData:', error);
+        throw error;
+    }
+};
+
+
 export const getFormById = async (id) => {
     try {
         if (!id) {

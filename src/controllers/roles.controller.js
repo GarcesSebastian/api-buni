@@ -20,9 +20,7 @@ export const CreateCustomRole = async (req, res) => {
 
         let permissionsJson;
         try {
-            permissionsJson = typeof permissions === 'string' 
-                ? JSON.parse(permissions) 
-                : permissions;
+            permissionsJson = typeof permissions === 'string' ? JSON.parse(permissions) : permissions;
         } catch (error) {
             return res.status(400).json({ error: 'Formato de permisos inválido' });
         }
@@ -53,9 +51,7 @@ export const UpdateCustomRole = async (req, res) => {
 
         let permissionsJson;
         try {
-            permissionsJson = typeof permissions === 'string' 
-                ? JSON.parse(permissions) 
-                : permissions;
+            permissionsJson = typeof permissions === 'string' ? JSON.parse(permissions) : permissions;
         } catch (error) {
             return res.status(400).json({ error: 'Formato de permisos inválido' });
         }

@@ -5,7 +5,7 @@ import { pool } from '../database/config.js';
 export const getEvents = async () => {
     try {
         const [events] = await pool.query('SELECT * FROM events');
-        return events.map(event => {
+        const eventsData = events.map(event => {
             const { created_at, ...eventData } = event;
             return {
                 ...eventData,
@@ -19,6 +19,8 @@ export const getEvents = async () => {
                 inscriptions: typeof event.inscriptions === 'string' ? JSON.parse(event.inscriptions) : event.inscriptions
             };
         });
+
+        return eventsData;
     } catch (error) {
         console.error('Error en getEvents:', error);
         throw new Error('Error al obtener los eventos de la base de datos');
@@ -189,8 +191,11 @@ export const updateEventForm = async (id, formData) => {
             const assists = typeof eventData.assists === "string" ? JSON.parse(eventData.assists) : eventData.assists
             eventData.assists = [...assists, rest]
         }
+
+        const inscriptionsFormatted = typeof eventData.inscriptions === "object" ? JSON.stringify(eventData.inscriptions) : eventData.inscriptions
+        const assistsFormatted = typeof eventData.assists === "object" ? JSON.stringify(eventData.assists) : eventData.assists
         
-        const result = await pool.query('UPDATE events SET inscriptions = ?, assists = ? WHERE id = ?', [JSON.stringify(eventData.inscriptions), JSON.stringify(eventData.assists), id])
+        const result = await pool.query('UPDATE events SET inscriptions = ?, assists = ? WHERE id = ?', [inscriptionsFormatted, assistsFormatted, id])
 
         if (result.affectedRows === 0) {
             throw new Error('Evento no encontrado');

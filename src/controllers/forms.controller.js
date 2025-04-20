@@ -1,4 +1,4 @@
-import { getForms, getFormById, createForm, updateForm, deleteForm } from '../services/forms.service.js';
+import { getForms, getFormById, createForm, updateForm, deleteForm, getFormData } from '../services/forms.service.js';
 
 export const GetForms = async (req, res) => {
     try {
@@ -6,6 +6,16 @@ export const GetForms = async (req, res) => {
         res.json(forms);
     } catch (error) {
         console.error('Error en GetForms:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const GetFormData = async (req, res) => {
+    try {
+        const formData = await getFormData(req.params.id, req.params.type);
+        res.json(formData);
+    } catch (error) {
+        console.error('Error en GetFormData:', error);
         res.status(500).json({ error: error.message });
     }
 };

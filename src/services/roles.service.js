@@ -5,9 +5,7 @@ export const getRoles = async () => {
         const [roles] = await pool.query('SELECT * FROM roles');
         return roles.map(role => ({
             ...role,
-            permissions: typeof role.permissions === 'string' 
-                ? JSON.parse(role.permissions) 
-                : role.permissions
+            permissions: typeof role.permissions === 'string' ? JSON.parse(role.permissions) : role.permissions
         }));
     } catch (error) {
         console.error('Error en getRoles:', error);
