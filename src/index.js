@@ -15,11 +15,25 @@ import sceneryRoutes from './routes/scenery.routes.js';
 import facultyRoutes from './routes/faculty.routes.js';
 import formsRoutes from './routes/forms.routes.js';
 import experimentalRoutes from './routes/experimental.routes.js';
-import { setupWebSocket } from './websocket.js';
-
+import { SocketManager } from './lib/SocketManager.js';
+import { Server } from 'socket.io';
 config();
+
 const app = express();
 const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: process.env.CORS_ORIGINS?.split(',') || [],
+        credentials: true
+    }
+});
+
+try {
+    const socketManager = SocketManager.getInstance(io);
+    socketManager.start();
+} catch (error) {
+    console.error('Error al inicializar el socket manager:', error);
+}
 
 const upload = multer({ dest: "uploads/" });
 
@@ -60,8 +74,6 @@ app.use("/scenery", sceneryRoutes);
 app.use("/faculty", facultyRoutes);
 app.use("/forms", formsRoutes);
 app.use("/experimental", experimentalRoutes);
-
-setupWebSocket(server);
 
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

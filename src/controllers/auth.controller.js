@@ -129,6 +129,42 @@ export const Login = async (req, res) => {
     }
 };
 
+export const CreateSession = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email y contraseña son requeridos' });
+        }
+
+        const isAdmin = email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD;
+         
+        if(!isAdmin) {
+            return res.status(401).json({ error: 'Credenciales inválidas' });
+        }
+
+        const payload = {
+            email,
+            role: ADMIN_ROLE,
+            permissions: "***"
+        }
+
+        const token = jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        return res.json({
+            token,
+            user: payload
+        });
+    } catch (error) {
+        console.error('Error al crear sesión:', error);
+        return res.status(500).json({ error: error.message || 'Error al crear sesión' });
+    }
+}
+
 export const Logout = async (req, res) => {
     try {
         const { token } = req.body;
