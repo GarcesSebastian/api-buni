@@ -1,7 +1,6 @@
 import { pool } from '../database/config.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { ADMIN_ROLE } from '../config/admin.js';
 import { getUsers } from '../services/user.service.js';
 
 export const VerifySession = async (req, res) => {
@@ -23,28 +22,28 @@ export const VerifySession = async (req, res) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = decoded;
 
-        if (user.role === ADMIN_ROLE) {
+        const payload = {
+            name: decoded.name,
+            email: decoded.email,
+            role: decoded.role,
+            permissions: decoded.permissions
+        }
+
+        if (decoded.email === process.env.ADMIN_EMAIL) {
             return res.json({
                 valid: true,
-                user: {
-                    name: process.env.ADMIN_NAME,
-                    email: user.email,
-                    role: ADMIN_ROLE
-                }
+                user: payload
             });
         }
 
-        const [customRole] = await pool.query('SELECT permissions FROM roles WHERE name = ?', [user.role]);
+        const [customRole] = await pool.query('SELECT permissions FROM roles WHERE name = ?', [decoded.role]);
         const permissions = customRole.length > 0 ? typeof customRole[0].permissions === 'string' ? JSON.parse(customRole[0].permissions) : customRole[0].permissions : null;
 
         return res.json({
             valid: true,
             user: {
-                id: user.id,
-                email: user.email,
-                role: user.role,
+                ...payload,
                 permissions
             }
         });
@@ -69,24 +68,22 @@ export const Login = async (req, res) => {
         }
 
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+            const payload = {
+                name: process.env.ADMIN_NAME,
+                email,
+                role: process.env.ADMIN_ROLE,
+                permissions: "***"
+            }
+
             const token = jwt.sign(
-                { 
-                    email,
-                    role: ADMIN_ROLE,
-                    permissions: "***"
-                },
+                payload,
                 process.env.JWT_SECRET,
                 { expiresIn: '24h' }
             );
 
             return res.json({
                 token,
-                user: {
-                    name: process.env.ADMIN_NAME,
-                    email,
-                    role: ADMIN_ROLE,
-                    permissions: "***"
-                }
+                user: payload
             });
         }
 
@@ -145,7 +142,7 @@ export const CreateSession = async (req, res) => {
 
         const payload = {
             email,
-            role: ADMIN_ROLE,
+            role: process.env.ADMIN_ROLE,
             permissions: "***"
         }
 

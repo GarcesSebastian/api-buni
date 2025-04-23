@@ -1,4 +1,3 @@
-import { ADMIN_ROLE } from '../config/admin.js';
 import { getUsers, createUser, updateUser, deleteUser } from '../services/user.service.js';
 import { getEvents } from '../services/events.service.js';
 import { getFaculties } from '../services/faculty.service.js';
@@ -6,16 +5,8 @@ import { getSceneries } from '../services/scenery.service.js';
 import { getForms } from '../services/forms.service.js';
 import { pool } from '../database/config.js';
 
-const isAdmin = (user) => {
-    return user.role === ADMIN_ROLE;
-};
-
 export const GetUsers = async (req, res) => {
     try {
-        if (!isAdmin(req.user)) {
-            return res.status(403).json({ error: 'No tienes permisos para realizar esta acción' });
-        }
-
         const users = await getUsers();
         return res.json(users);
     } catch (error) {
@@ -26,10 +17,6 @@ export const GetUsers = async (req, res) => {
 
 export const GetUserData = async (req, res) => {
     try {
-        if (!isAdmin(req.user)) {
-            return res.status(403).json({ error: 'No tienes permisos para realizar esta acción' });
-        }
-
         const [roles] = await pool.query('SELECT id, name, permissions FROM roles');
         
         const userData = {
