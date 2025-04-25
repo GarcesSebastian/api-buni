@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS scenery;
-DROP TABLE IF EXISTS faculty;
+DROP TABLE IF EXISTS programs;
 DROP TABLE IF EXISTS forms;
 
 CREATE TABLE roles (
@@ -31,7 +31,7 @@ CREATE TABLE events (
     nombre VARCHAR(255) NOT NULL,
     organizador VARCHAR(255) NOT NULL,
     scenery JSON NOT NULL,
-    faculty JSON NOT NULL,
+    programs JSON NOT NULL,
     cupos VARCHAR(255) NOT NULL,
     fecha DATE NOT NULL,
     hora TIME NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE scenery (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE faculty (
+CREATE TABLE programs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
     state VARCHAR(255) NOT NULL,

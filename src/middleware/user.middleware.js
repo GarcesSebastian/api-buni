@@ -2,7 +2,7 @@ import { pool } from '../database/config.js';
 import jwt from 'jsonwebtoken';
 import { getUsers } from '../services/user.service.js';
 import { getEvents } from '../services/events.service.js';
-import { getFaculties } from '../services/faculty.service.js';
+import { getPrograms } from '../services/programs.service.js';
 import { getSceneries } from '../services/scenery.service.js';
 import { getForms } from '../services/forms.service.js';
 import { getRoles } from '../services/roles.service.js';
@@ -10,7 +10,7 @@ import { getRoles } from '../services/roles.service.js';
 const entityServices = {
     users: getUsers,
     events: getEvents,
-    faculties: getFaculties,
+    programs: getPrograms,
     sceneries: getSceneries,
     forms: getForms,
     roles: getRoles

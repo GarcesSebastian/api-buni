@@ -1,5 +1,3 @@
-import XLSX from "xlsx";
-import path from 'path';
 import { pool } from '../database/config.js';
 
 export const getEvents = async () => {
@@ -12,7 +10,7 @@ export const getEvents = async () => {
                 fecha: event.fecha.toISOString().split('T')[0],
                 hora: event.hora.slice(0, 5),
                 scenery: typeof event.scenery === 'string' ? JSON.parse(event.scenery) : event.scenery,
-                faculty: typeof event.faculty === 'string' ? JSON.parse(event.faculty) : event.faculty,
+                programs: typeof event.programs === 'string' ? JSON.parse(event.programs) : event.programs,
                 formAssists: typeof event.formAssists === 'string' ? JSON.parse(event.formAssists) : event.formAssists,
                 formInscriptions: typeof event.formInscriptions === 'string' ? JSON.parse(event.formInscriptions) : event.formInscriptions,
                 assists: typeof event.assists === 'string' ? JSON.parse(event.assists) : event.assists,
@@ -34,7 +32,7 @@ export const getEventById = async (id) => {
         }
 
         const [event] = await pool.query(
-            'SELECT id, nombre, organizador, scenery, faculty, cupos, fecha, hora, state, formAssists, formInscriptions, assists, inscriptions FROM events WHERE id = ?', 
+            'SELECT id, nombre, organizador, scenery, programs, cupos, fecha, hora, state, formAssists, formInscriptions, assists, inscriptions FROM events WHERE id = ?', 
             [id]
         );
 
@@ -48,7 +46,7 @@ export const getEventById = async (id) => {
             fecha: eventData.fecha.toISOString().split('T')[0],
             hora: eventData.hora.slice(0, 5),
             scenery: typeof eventData.scenery === 'string' ? JSON.parse(eventData.scenery) : eventData.scenery,
-            faculty: typeof eventData.faculty === 'string' ? JSON.parse(eventData.faculty) : eventData.faculty,
+            programs: typeof eventData.programs === 'string' ? JSON.parse(eventData.programs) : eventData.programs,
             formAssists: typeof eventData.formAssists === 'string' ? JSON.parse(eventData.formAssists) : eventData.formAssists,
             formInscriptions: typeof eventData.formInscriptions === 'string' ? JSON.parse(eventData.formInscriptions) : eventData.formInscriptions,
             assists: typeof eventData.assists === 'string' ? JSON.parse(eventData.assists) : eventData.assists,
@@ -69,7 +67,7 @@ export const createEvent = async (eventData) => {
             nombre,
             organizador,
             scenery,
-            faculty,
+            programs,
             cupos,
             fecha,
             hora,
@@ -80,17 +78,17 @@ export const createEvent = async (eventData) => {
             inscriptions
         } = eventData;
 
-        if (!nombre || !organizador || !scenery || !faculty || !cupos || !fecha || !hora || state === undefined) {
+        if (!nombre || !organizador || !scenery || !programs || !cupos || !fecha || !hora || state === undefined) {
             throw new Error('Todos los campos son requeridos');
         }
 
         const [result] = await pool.query(
-            'INSERT INTO events (nombre, organizador, scenery, faculty, cupos, fecha, hora, state, formAssists, formInscriptions, assists, inscriptions) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO events (nombre, organizador, scenery, programs, cupos, fecha, hora, state, formAssists, formInscriptions, assists, inscriptions) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [
                 nombre,
                 organizador,
                 JSON.stringify(scenery),
-                JSON.stringify(faculty),
+                JSON.stringify(programs),
                 cupos,
                 fecha,
                 hora,
@@ -118,7 +116,7 @@ export const updateEvent = async (id, eventData) => {
             nombre,
             organizador,
             scenery,
-            faculty,
+            programs,
             cupos,
             fecha,
             hora,
@@ -129,17 +127,17 @@ export const updateEvent = async (id, eventData) => {
             inscriptions
         } = eventData;
 
-        if (!nombre || !organizador || !scenery || !faculty || !cupos || !fecha || !hora || state === undefined) {
+        if (!nombre || !organizador || !scenery || !programs || !cupos || !fecha || !hora || state === undefined) {
             throw new Error('Todos los campos son requeridos');
         }
 
         const [result] = await pool.query(
-            'UPDATE events SET nombre = ?, organizador = ?, scenery = ?, faculty = ?, cupos = ?, fecha = ?, hora = ?, state = ?, formAssists = ?, formInscriptions = ?, assists = ?, inscriptions = ? WHERE id = ?',
+            'UPDATE events SET nombre = ?, organizador = ?, scenery = ?, programs = ?, cupos = ?, fecha = ?, hora = ?, state = ?, formAssists = ?, formInscriptions = ?, assists = ?, inscriptions = ? WHERE id = ?',
             [
                 nombre,
                 organizador,
                 JSON.stringify(scenery),
-                JSON.stringify(faculty),
+                JSON.stringify(programs),
                 cupos,
                 fecha,
                 hora,

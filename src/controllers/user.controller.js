@@ -1,6 +1,6 @@
 import { getUsers, createUser, updateUser, deleteUser } from '../services/user.service.js';
 import { getEvents } from '../services/events.service.js';
-import { getFaculties } from '../services/faculty.service.js';
+import { getPrograms } from '../services/programs.service.js';
 import { getSceneries } from '../services/scenery.service.js';
 import { getForms } from '../services/forms.service.js';
 import { pool } from '../database/config.js';
@@ -21,7 +21,7 @@ export const GetUserData = async (req, res) => {
         
         const userData = {
             events: await getEvents(),
-            faculty: await getFaculties(),
+            programs: await getPrograms(),
             scenery: await getSceneries(),
             users: await getUsers(),
             forms: await getForms(),

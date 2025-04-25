@@ -12,7 +12,7 @@ import filesRoutes from './routes/files.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import rolesRoutes from './routes/roles.routes.js';
 import sceneryRoutes from './routes/scenery.routes.js';
-import facultyRoutes from './routes/faculty.routes.js';
+import programsRoutes from './routes/programs.routes.js';
 import formsRoutes from './routes/forms.routes.js';
 import experimentalRoutes from './routes/experimental.routes.js';
 import { SocketManager } from './lib/SocketManager.js';
@@ -71,7 +71,7 @@ app.use("/files", filesRoutes);
 app.use("/auth", authRoutes);
 app.use("/roles", rolesRoutes);
 app.use("/scenery", sceneryRoutes);
-app.use("/faculty", facultyRoutes);
+app.use("/programs", programsRoutes);
 app.use("/forms", formsRoutes);
 app.use("/experimental", experimentalRoutes);
 

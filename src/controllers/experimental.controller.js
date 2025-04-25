@@ -80,17 +80,17 @@ export const deleteScenery = async (req, res) => {
     }
 };
 
-export const deleteFaculty = async (req, res) => {
+export const deletePrograms = async (req, res) => {
     try {
-        const [result] = await pool.query('DELETE FROM faculty');
+        const [result] = await pool.query('DELETE FROM programs');
         res.status(200).json({ 
-            message: 'Facultades eliminadas correctamente',
+            message: 'Programas eliminados correctamente',
             affectedRows: result.affectedRows
         });
     } catch (error) {
-        console.error('Error en deleteFaculty:', error);
+        console.error('Error en deletePrograms:', error);
         res.status(500).json({ 
-            error: 'Error al eliminar las facultades',
+            error: 'Error al eliminar los programas',
             details: error.message
         });
     }
@@ -104,7 +104,7 @@ export const deleteAll = async (req, res) => {
             pool.query('DELETE FROM users'),
             pool.query('DELETE FROM roles'),
             pool.query('DELETE FROM scenery'),
-            pool.query('DELETE FROM faculty')
+            pool.query('DELETE FROM programs')
         ]);
 
         const summary = {
@@ -113,7 +113,7 @@ export const deleteAll = async (req, res) => {
             users: results[2][0].affectedRows,
             roles: results[3][0].affectedRows,
             scenery: results[4][0].affectedRows,
-            faculty: results[5][0].affectedRows
+            programs: results[5][0].affectedRows
         };
 
         res.status(200).json({ 

@@ -26,7 +26,7 @@ export const getFormData = async (eventId, typeForm) => {
             fecha: event[0].fecha.toISOString().split('T')[0],
             hora: event[0].hora.slice(0, 5),
             scenery: typeof event[0].scenery === 'string' ? JSON.parse(event[0].scenery) : event[0].scenery,
-            faculty: typeof event[0].faculty === 'string' ? JSON.parse(event[0].faculty) : event[0].faculty,
+            programs: typeof event[0].programs === 'string' ? JSON.parse(event[0].programs) : event[0].programs,
             assists: undefined,
             inscriptions: undefined,
             formAssists: typeof event[0].formAssists === 'string' ? JSON.parse(event[0].formAssists) : event[0].formAssists,

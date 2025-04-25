@@ -1,15 +1,15 @@
 import { pool } from '../database/config.js';
 import jwt from 'jsonwebtoken';
 
-export const createFacultyMiddleware = async (req, res, next) => {
+export const createProgramMiddleware = async (req, res, next) => {
     if (!req.headers.authorization) {
-        return res.status(401).json({ error: 'No tienes permisos para crear facultades' });
+        return res.status(401).json({ error: 'No tienes permisos para crear programas' });
     }
 
     const token = req.headers.authorization.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({ error: 'No tienes permisos para crear facultades' });
+        return res.status(401).json({ error: 'No tienes permisos para crear programas' });
     }
 
     try {
@@ -22,11 +22,11 @@ export const createFacultyMiddleware = async (req, res, next) => {
 
         const [role] = await pool.query('SELECT * FROM roles WHERE name = ?', [decoded.role]);
         const role_permissions = typeof role[0].permissions === 'string' ? JSON.parse(role[0].permissions) : role[0].permissions;
-        const faculty_permissions = role_permissions.faculty;
-        const { create } = faculty_permissions;
+        const program_permissions = role_permissions.programs;
+        const { create } = program_permissions;
 
         if(!create) {
-            return res.status(401).json({ error: 'No tienes permisos para crear facultades' });
+            return res.status(401).json({ error: 'No tienes permisos para crear programas' });
         }
 
         next();
@@ -36,15 +36,15 @@ export const createFacultyMiddleware = async (req, res, next) => {
     }
 }
 
-export const updateFacultyMiddleware = async (req, res, next) => {
+export const updateProgramMiddleware = async (req, res, next) => {
     if (!req.headers.authorization) {
-        return res.status(401).json({ error: 'No tienes permisos para actualizar facultades' });
+        return res.status(401).json({ error: 'No tienes permisos para actualizar programas' });
     }
 
     const token = req.headers.authorization.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({ error: 'No tienes permisos para actualizar facultades' });
+        return res.status(401).json({ error: 'No tienes permisos para actualizar programas' });
     }
 
     try {
@@ -57,11 +57,11 @@ export const updateFacultyMiddleware = async (req, res, next) => {
 
         const [role] = await pool.query('SELECT * FROM roles WHERE name = ?', [decoded.role]);
         const role_permissions = typeof role[0].permissions === 'string' ? JSON.parse(role[0].permissions) : role[0].permissions;
-        const faculty_permissions = role_permissions.faculty;
-        const { edit } = faculty_permissions;
+        const program_permissions = role_permissions.programs;
+        const { edit } = program_permissions;
 
         if(!edit) {
-            return res.status(401).json({ error: 'No tienes permisos para actualizar facultades' });
+            return res.status(401).json({ error: 'No tienes permisos para actualizar programas' });
         }
 
         next();
@@ -71,15 +71,15 @@ export const updateFacultyMiddleware = async (req, res, next) => {
     }
 }
 
-export const deleteFacultyMiddleware = async (req, res, next) => {
+export const deleteProgramMiddleware = async (req, res, next) => {
     if (!req.headers.authorization) {
-        return res.status(401).json({ error: 'No tienes permisos para eliminar facultades' });
+        return res.status(401).json({ error: 'No tienes permisos para eliminar programas' });
     }
 
     const token = req.headers.authorization.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({ error: 'No tienes permisos para eliminar facultades' });
+        return res.status(401).json({ error: 'No tienes permisos para eliminar programas' });
     }
 
     try {
@@ -92,11 +92,11 @@ export const deleteFacultyMiddleware = async (req, res, next) => {
 
         const [role] = await pool.query('SELECT * FROM roles WHERE name = ?', [decoded.role]);
         const role_permissions = typeof role[0].permissions === 'string' ? JSON.parse(role[0].permissions) : role[0].permissions;
-        const faculty_permissions = role_permissions.faculty;
-        const { delete: delete_permission } = faculty_permissions;
+        const program_permissions = role_permissions.programs;
+        const { delete: delete_permission } = program_permissions;
 
         if(!delete_permission) {
-            return res.status(401).json({ error: 'No tienes permisos para eliminar facultades' });
+            return res.status(401).json({ error: 'No tienes permisos para eliminar programas' });
         }
 
         next();
