@@ -17,6 +17,7 @@ import formsRoutes from './routes/forms.routes.js';
 import experimentalRoutes from './routes/experimental.routes.js';
 import { SocketManager } from './lib/SocketManager.js';
 import { Server } from 'socket.io';
+
 config();
 
 const app = express();
@@ -57,8 +58,8 @@ app.use(cors({
 }));
 
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 200,
+    windowMs: process.env.RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
+    max: process.env.RATE_LIMIT_MAX,
     message: { message: 'Too many requests, please try again later.' }
 });
 app.use(limiter);
