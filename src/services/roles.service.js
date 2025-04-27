@@ -1,8 +1,8 @@
-import { pool } from '../database/config.js';
+import { RoleModule } from '../models/roles.module.js';
 
 export const getRoles = async () => {
     try {
-        const [roles] = await pool.query('SELECT * FROM roles');
+        const roles = await RoleModule.getRoles();
         return roles.map(role => ({
             ...role,
             permissions: typeof role.permissions === 'string' ? JSON.parse(role.permissions) : role.permissions
@@ -19,21 +19,22 @@ export const createRole = async (name, permissions) => {
             throw new Error('El nombre y los permisos son requeridos');
         }
 
-        const [existingRole] = await pool.query('SELECT * FROM roles WHERE name = ?', [name]);
-        if (existingRole.length > 0) {
+        const existingRole = await RoleModule.getRoleByName(name);
+        if (existingRole) {
             throw new Error('Ya existe un rol con ese nombre');
         }
 
-        const [result] = await pool.query(
-            'INSERT INTO roles (name, permissions) VALUES (?, ?)',
-            [name, JSON.stringify(permissions)]
-        );
+        const payload = {   
+            name,
+            permissions: JSON.stringify(permissions)
+        }
+
+        const result = await RoleModule.createRole(payload);
 
         return {
             id: result.insertId,
-            name,
-            permissions,
-            created_at: new Date()
+            ...payload,
+            permissions: typeof payload.permissions === 'string' ? JSON.parse(payload.permissions) : payload.permissions
         };
     } catch (error) {
         console.error('Error en createRole:', error);
@@ -47,31 +48,25 @@ export const updateRole = async (id, name, permissions) => {
             throw new Error('El ID, nombre y permisos son requeridos');
         }
 
-        const [existingRole] = await pool.query('SELECT * FROM roles WHERE id = ?', [id]);
-        if (existingRole.length === 0) {
+        const existingRole = await RoleModule.getRoleById(id);
+        if (!existingRole) {
             throw new Error('Rol no encontrado');
         }
 
-        const [existingName] = await pool.query(
-            'SELECT * FROM roles WHERE name = ? AND id != ?',
-            [name, id]
-        );
+        const isSameName = existingRole.name === name;
+        const existingName = await RoleModule.getRoleByName(name);
 
-        if (existingName.length > 0) {
+        if (existingName && !isSameName) {
             throw new Error('Ya existe un rol con ese nombre');
         }
 
-        await pool.query(
-            'UPDATE roles SET name = ?, permissions = ? WHERE id = ?',
-            [name, JSON.stringify(permissions), id]
-        );
+        const result = await RoleModule.updateRole(id, { name, permissions: JSON.stringify(permissions) });
 
-        return {
-            id: parseInt(id),
-            name,
-            permissions,
-            created_at: existingRole[0].created_at
-        };
+        if (result.affectedRows === 0) {
+            throw new Error('No se pudo actualizar el rol');
+        }
+
+        return true;
     } catch (error) {
         console.error('Error en updateRole:', error);
         throw error;
@@ -84,26 +79,24 @@ export const deleteRole = async (id) => {
             throw new Error('El ID del rol es requerido');
         }
 
-        const [existingRole] = await pool.query('SELECT * FROM roles WHERE id = ?', [id]);
-        if (existingRole.length === 0) {
+        const existingRole = await RoleModule.getRoleById(id);
+        if (!existingRole) {
             throw new Error('Rol no encontrado');
         }
 
-        const [usersWithRole] = await pool.query(
-            'SELECT COUNT(*) as count FROM users WHERE role_id = ?',
-            [id]
-        );
+        const usersWithRole = await RoleModule.getUsersWithRole(id);
 
-        if (usersWithRole[0].count > 0) {
+        if (usersWithRole > 0) {
             throw new Error('No se puede eliminar el rol porque hay usuarios que lo están utilizando');
         }
 
-        await pool.query('DELETE FROM roles WHERE id = ?', [id]);
+        const result = await RoleModule.deleteRole(id);
 
-        return {
-            id: parseInt(id),
-            name: existingRole[0].name
-        };
+        if (result.affectedRows === 0) {
+            throw new Error('No se pudo eliminar el rol');
+        }
+
+        return true;
     } catch (error) {
         console.error('Error en deleteRole:', error);
         throw error;

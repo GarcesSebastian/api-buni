@@ -1,8 +1,10 @@
-import { pool } from '../database/config.js';
+import { EventsModule } from '../models/events.module.js';
+import { FormsModule } from '../models/forms.module.js';
+import { SceneryModule } from '../models/scenery.module.js';
 
 export const getForms = async () => {
     try {
-        const [forms] = await pool.query('SELECT id, name, description, fields, state FROM forms');
+        const forms = await FormsModule.getForms();
         return forms.map(form => ({
             ...form,
             fields: typeof form.fields === 'string' ? JSON.parse(form.fields) : form.fields
@@ -15,45 +17,45 @@ export const getForms = async () => {
 
 export const getFormData = async (eventId, typeForm) => {
     try {
-        const [event] = await pool.query('SELECT * FROM events WHERE id = ?', [eventId])
+        const event = await EventsModule.getEventById(eventId);
 
-        if (event.length === 0) {
+        if (!event) {
             throw new Error('Evento no encontrado');
         }
 
         const eventFormatted = {
-            ...event[0],
-            fecha: event[0].fecha.toISOString().split('T')[0],
-            hora: event[0].hora.slice(0, 5),
-            scenery: typeof event[0].scenery === 'string' ? JSON.parse(event[0].scenery) : event[0].scenery,
-            programs: typeof event[0].programs === 'string' ? JSON.parse(event[0].programs) : event[0].programs,
+            ...event,
+            horarioInicio: event.horarioInicio.split('.')[0],
+            horarioFin: event.horarioFin.split('.')[0],
+            scenery: typeof event.scenery === 'string' ? JSON.parse(event.scenery) : event.scenery,
+            programs: typeof event.programs === 'string' ? JSON.parse(event.programs) : event.programs,
             assists: undefined,
             inscriptions: undefined,
-            formAssists: typeof event[0].formAssists === 'string' ? JSON.parse(event[0].formAssists) : event[0].formAssists,
-            formInscriptions: typeof event[0].formInscriptions === 'string' ? JSON.parse(event[0].formInscriptions) : event[0].formInscriptions
+            formAssists: typeof event.formAssists === 'string' ? JSON.parse(event.formAssists) : event.formAssists,
+            formInscriptions: typeof event.formInscriptions === 'string' ? JSON.parse(event.formInscriptions) : event.formInscriptions
         }
 
         const sceneryId = eventFormatted.scenery.id
-        const [scenery] = await pool.query('SELECT * FROM scenery WHERE id = ?', [sceneryId])
+        const scenery = await SceneryModule.getSceneryById(sceneryId)
 
-        if (scenery.length === 0) {
+        if (!scenery) {
             throw new Error('Escenario no encontrado');
         }
 
         const formId = eventFormatted[typeForm].id
-        const [form] = await pool.query('SELECT * FROM forms WHERE id = ?', [formId])
+        const form = await FormsModule.getFormById(formId)
 
-        if (form.length === 0) {
+        if (!form) {
             throw new Error('Formulario no encontrado');
         }
 
         const payload = {
             event: eventFormatted,
             form: {
-                ...form[0],
-                fields: typeof form[0].fields === 'string' ? JSON.parse(form[0].fields) : form[0].fields
+                ...form,
+                fields: typeof form.fields === 'string' ? JSON.parse(form.fields) : form.fields
             },
-            scenery: scenery[0]
+            scenery: scenery
         }
         
 
@@ -71,19 +73,15 @@ export const getFormById = async (id) => {
             throw new Error('El ID del formulario es requerido');
         }
 
-        const [form] = await pool.query(
-            'SELECT id, name, description, fields, state FROM forms WHERE id = ?',
-            [id]
-        );
+        const form = await FormsModule.getFormById(id)
 
-        if (form.length === 0) {
+        if (!form) {
             throw new Error('Formulario no encontrado');
         }
 
-        const formData = form[0];
         return {
-            ...formData,
-            fields: typeof formData.fields === 'string' ? JSON.parse(formData.fields) : formData.fields
+            ...form,
+            fields: typeof form.fields === 'string' ? JSON.parse(form.fields) : form.fields
         };
     } catch (error) {
         console.error('Error en getFormById:', error);
@@ -99,22 +97,24 @@ export const createForm = async (formData) => {
             throw new Error('Todos los campos son requeridos');
         }
 
-        const [existingForm] = await pool.query('SELECT id FROM forms WHERE name = ?', [name]);
-        if (existingForm.length > 0) {
+        const existingForm = await FormsModule.getFormByName(name);
+        if (existingForm) {
             throw new Error('Ya existe un formulario con ese nombre');
         }
 
-        const [result] = await pool.query(
-            'INSERT INTO forms (name, description, fields, state) VALUES (?, ?, ?, ?)',
-            [name, description, JSON.stringify(fields), state]
-        );
+        const payload = {
+            name,
+            description,
+            fields: JSON.stringify(fields),
+            state
+        }
+
+        const result = await FormsModule.createForm(payload);
 
         return {
             id: result.insertId,
-            name,
-            description,
-            fields,
-            state
+            ...payload,
+            fields: typeof payload.fields === 'string' ? JSON.parse(payload.fields) : payload.fields
         };
     } catch (error) {
         console.error('Error en createForm:', error);
@@ -130,32 +130,30 @@ export const updateForm = async (id, formData) => {
             throw new Error('Todos los campos son requeridos');
         }
 
-        const [existingForm] = await pool.query('SELECT id FROM forms WHERE id = ?', [id]);
-        if (existingForm.length === 0) {
+        const existingForm = await FormsModule.getFormById(id);
+        if (!existingForm) {
             throw new Error('Formulario no encontrado');
         }
 
-        const [nameForm] = await pool.query('SELECT id FROM forms WHERE name = ? AND id != ?', [name, id]);
-        if (nameForm.length > 0) {
+        const isSameName = existingForm.name === name;
+        const nameForm = await FormsModule.getFormByName(name);
+        if (nameForm && !isSameName) {
             throw new Error('Ya existe un formulario con ese nombre');
         }
 
-        const [result] = await pool.query(
-            'UPDATE forms SET name = ?, description = ?, fields = ?, state = ? WHERE id = ?',
-            [name, description, JSON.stringify(fields), state, id]
-        );
+        const payload = {
+            name,
+            description,
+            fields: JSON.stringify(fields),
+            state
+        }
 
+        const result = await FormsModule.updateForm(id, payload);
         if (result.affectedRows === 0) {
             throw new Error('No se pudo actualizar el formulario');
         }
 
-        return {
-            id,
-            name,
-            description,
-            fields,
-            state
-        };
+        return true;
     } catch (error) {
         console.error('Error en updateForm:', error);
         throw error;
@@ -168,21 +166,18 @@ export const deleteForm = async (id) => {
             throw new Error('El ID del formulario es requerido');
         }
 
-        const [existingForm] = await pool.query('SELECT id FROM forms WHERE id = ?', [id]);
-        if (existingForm.length === 0) {
+        const existingForm = await FormsModule.getFormById(id);
+        if (!existingForm) {
             throw new Error('Formulario no encontrado');
         }
 
-        const [result] = await pool.query('DELETE FROM forms WHERE id = ?', [id]);
+        const result = await FormsModule.deleteForm(id);
 
         if (result.affectedRows === 0) {
             throw new Error('No se pudo eliminar el formulario');
         }
 
-        return {
-            id,
-            message: 'Formulario eliminado exitosamente'
-        };
+        return true;
     } catch (error) {
         console.error('Error en deleteForm:', error);
         throw error;

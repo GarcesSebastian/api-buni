@@ -92,4 +92,3 @@ export const deleteEventMiddleware = async (req, res, next) => {
 
     next();
 }
-

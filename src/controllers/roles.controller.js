@@ -30,7 +30,10 @@ export const CreateCustomRole = async (req, res) => {
         }
 
         const role = await createRole(name, permissionsJson);
-        return res.status(201).json(role);
+        return res.status(201).json({
+            message: 'Rol creado exitosamente',
+            data: role
+        });
     } catch (error) {
         console.error('Error al crear rol:', error);
         if (error.message.includes('ya existe')) {
@@ -61,7 +64,10 @@ export const UpdateCustomRole = async (req, res) => {
         }
 
         const role = await updateRole(id, name, permissionsJson);
-        return res.json(role);
+        return res.json({
+            message: 'Rol actualizado exitosamente',
+            data: role
+        });
     } catch (error) {
         console.error('Error al actualizar rol:', error);
         if (error.message.includes('no encontrado') || error.message.includes('ya existe')) {

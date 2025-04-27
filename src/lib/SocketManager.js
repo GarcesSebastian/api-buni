@@ -37,8 +37,20 @@ export class SocketManager {
 
             socket.on('UPDATE_DATA', (data) => {
                 SocketManager.users.forEach((user) => {
-                    if(socket.id !== user.socket.id && user.data.token){
-                        user.socket.emit('UPDATE_DATA', data);
+                    if(socket.id !== user.socket.id){
+                        if(user.data.token){
+                            user.socket.emit('UPDATE_DATA', data);
+                            return;
+                        }
+
+                        const {events, forms, scenery, programs} = data
+                        const dataFormatted = {
+                            events,
+                            forms,
+                            scenery,
+                            programs
+                        }
+                        user.socket.emit('UPDATE_DATA', dataFormatted);
                     }
                 });
             });

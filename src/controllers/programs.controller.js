@@ -29,7 +29,10 @@ export const CreateProgram = async (req, res) => {
         }
 
         const program = await createProgram(name, state);
-        res.status(201).json(program);
+        res.status(201).json({
+            message: 'Programa creado exitosamente',
+            data: program
+        });
     } catch (error) {
         console.error('Error al crear programa:', error);
         if (error.message.includes('requeridos') || error.message.includes('ya existe')) {
@@ -49,7 +52,10 @@ export const UpdateProgram = async (req, res) => {
         }
 
         const program = await updateProgram(id, name, state);
-        res.json(program);
+        res.json({
+            message: 'Programa actualizado exitosamente',
+            data: program
+        });
     } catch (error) {
         console.error('Error al actualizar programa:', error);
         if (error.message.includes('requeridos') || error.message.includes('no encontrada')) {
@@ -68,7 +74,10 @@ export const DeleteProgram = async (req, res) => {
         }
 
         const result = await deleteProgram(id);
-        res.json(result);
+        res.json({
+            message: 'Programa eliminado exitosamente',
+            data: result
+        });
     } catch (error) {
         console.error('Error al eliminar programa:', error);
         if (error.message.includes('no encontrada')) {

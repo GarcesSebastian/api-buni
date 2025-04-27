@@ -1,14 +1,14 @@
-import { pool } from '../database/config.js';
+import { EventsModule } from '../models/events.module.js';
 
 export const getEvents = async () => {
     try {
-        const [events] = await pool.query('SELECT * FROM events');
+        const events = await EventsModule.getEvents();
+        
         const eventsData = events.map(event => {
-            const { created_at, ...eventData } = event;
             return {
-                ...eventData,
-                fecha: event.fecha.toISOString().split('T')[0],
-                hora: event.hora.slice(0, 5),
+                ...event,
+                horarioInicio: event.horarioInicio.split('.')[0],
+                horarioFin: event.horarioFin.split('.')[0],
                 scenery: typeof event.scenery === 'string' ? JSON.parse(event.scenery) : event.scenery,
                 programs: typeof event.programs === 'string' ? JSON.parse(event.programs) : event.programs,
                 formAssists: typeof event.formAssists === 'string' ? JSON.parse(event.formAssists) : event.formAssists,
@@ -31,26 +31,22 @@ export const getEventById = async (id) => {
             throw new Error('El ID del evento es requerido');
         }
 
-        const [event] = await pool.query(
-            'SELECT id, nombre, organizador, scenery, programs, cupos, fecha, hora, state, formAssists, formInscriptions, assists, inscriptions FROM events WHERE id = ?', 
-            [id]
-        );
+        const event = await EventsModule.getEventById(id);
 
-        if (event.length === 0) {
+        if (!event) {
             throw new Error('Evento no encontrado');
         }
 
-        const eventData = event[0];
         return {
-            ...eventData,
-            fecha: eventData.fecha.toISOString().split('T')[0],
-            hora: eventData.hora.slice(0, 5),
-            scenery: typeof eventData.scenery === 'string' ? JSON.parse(eventData.scenery) : eventData.scenery,
-            programs: typeof eventData.programs === 'string' ? JSON.parse(eventData.programs) : eventData.programs,
-            formAssists: typeof eventData.formAssists === 'string' ? JSON.parse(eventData.formAssists) : eventData.formAssists,
-            formInscriptions: typeof eventData.formInscriptions === 'string' ? JSON.parse(eventData.formInscriptions) : eventData.formInscriptions,
-            assists: typeof eventData.assists === 'string' ? JSON.parse(eventData.assists) : eventData.assists,
-            inscriptions: typeof eventData.inscriptions === 'string' ? JSON.parse(eventData.inscriptions) : eventData.inscriptions
+            ...event,
+            horarioInicio: event.horarioInicio.split('.')[0],
+            horarioFin: event.horarioFin.split('.')[0],
+            scenery: typeof event.scenery === 'string' ? JSON.parse(event.scenery) : event.scenery,
+            programs: typeof event.programs === 'string' ? JSON.parse(event.programs) : event.programs,
+            formAssists: typeof event.formAssists === 'string' ? JSON.parse(event.formAssists) : event.formAssists,
+            formInscriptions: typeof event.formInscriptions === 'string' ? JSON.parse(event.formInscriptions) : event.formInscriptions,
+            assists: typeof event.assists === 'string' ? JSON.parse(event.assists) : event.assists,
+            inscriptions: typeof event.inscriptions === 'string' ? JSON.parse(event.inscriptions) : event.inscriptions
         };
     } catch (error) {
         console.error('Error en getEventById:', error);
@@ -69,8 +65,8 @@ export const createEvent = async (eventData) => {
             scenery,
             programs,
             cupos,
-            fecha,
-            hora,
+            horarioInicio,
+            horarioFin,
             state,
             formAssists,
             formInscriptions,
@@ -78,35 +74,44 @@ export const createEvent = async (eventData) => {
             inscriptions
         } = eventData;
 
-        if (!nombre || !organizador || !scenery || !programs || !cupos || !fecha || !hora || state === undefined) {
+        if (!nombre || !organizador || !scenery || !programs || !cupos || !horarioInicio || !horarioFin || state === undefined) {
             throw new Error('Todos los campos son requeridos');
         }
 
-        const [result] = await pool.query(
-            'INSERT INTO events (nombre, organizador, scenery, programs, cupos, fecha, hora, state, formAssists, formInscriptions, assists, inscriptions) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [
-                nombre,
-                organizador,
-                JSON.stringify(scenery),
-                JSON.stringify(programs),
-                cupos,
-                fecha,
-                hora,
-                state,
-                JSON.stringify(formAssists),
-                JSON.stringify(formInscriptions),
-                JSON.stringify(assists),
-                JSON.stringify(inscriptions)
-            ]
-        );
+        const payload = {
+            nombre,
+            organizador,
+            scenery: JSON.stringify(scenery),
+            programs: JSON.stringify(programs),
+            cupos,
+            horarioInicio,
+            horarioFin,
+            state,
+            formAssists: JSON.stringify(formAssists || []),
+            formInscriptions: JSON.stringify(formInscriptions || []),
+            assists: JSON.stringify(assists || []),
+            inscriptions: JSON.stringify(inscriptions || [])
+        }
 
-        return result.insertId;
+        const result = await EventsModule.createEvent(payload);
+
+        if (result.affectedRows === 0) {
+            throw new Error('Evento no creado');
+        }
+
+        return {
+            id: result.insertId,
+            ...payload,
+            scenery: typeof payload.scenery === 'string' ? JSON.parse(payload.scenery) : payload.scenery,
+            programs: typeof payload.programs === 'string' ? JSON.parse(payload.programs) : payload.programs,
+            formAssists: typeof payload.formAssists === 'string' ? JSON.parse(payload.formAssists) : payload.formAssists,
+            formInscriptions: typeof payload.formInscriptions === 'string' ? JSON.parse(payload.formInscriptions) : payload.formInscriptions,
+            assists: typeof payload.assists === 'string' ? JSON.parse(payload.assists) : payload.assists,
+            inscriptions: typeof payload.inscriptions === 'string' ? JSON.parse(payload.inscriptions) : payload.inscriptions
+        };
     } catch (error) {
         console.error('Error en createEvent:', error);
-        if (error.message.includes('requeridos')) {
-            throw error;
-        }
-        throw new Error('Error al crear el evento en la base de datos');
+        throw error;
     }
 };
 
@@ -118,8 +123,8 @@ export const updateEvent = async (id, eventData) => {
             scenery,
             programs,
             cupos,
-            fecha,
-            hora,
+            horarioInicio,
+            horarioFin,
             state,
             formAssists,
             formInscriptions,
@@ -127,28 +132,26 @@ export const updateEvent = async (id, eventData) => {
             inscriptions
         } = eventData;
 
-        if (!nombre || !organizador || !scenery || !programs || !cupos || !fecha || !hora || state === undefined) {
+        if (!nombre || !organizador || !scenery || !programs || !cupos || !horarioInicio || !horarioFin || state === undefined) {
             throw new Error('Todos los campos son requeridos');
         }
 
-        const [result] = await pool.query(
-            'UPDATE events SET nombre = ?, organizador = ?, scenery = ?, programs = ?, cupos = ?, fecha = ?, hora = ?, state = ?, formAssists = ?, formInscriptions = ?, assists = ?, inscriptions = ? WHERE id = ?',
-            [
-                nombre,
-                organizador,
-                JSON.stringify(scenery),
-                JSON.stringify(programs),
-                cupos,
-                fecha,
-                hora,
-                state,
-                JSON.stringify(formAssists),
-                JSON.stringify(formInscriptions),
-                JSON.stringify(assists),
-                JSON.stringify(inscriptions),
-                id
-            ]
-        );
+        const payload = {
+            nombre,
+            organizador,
+            scenery: JSON.stringify(scenery),
+            programs: JSON.stringify(programs),
+            cupos,
+            horarioInicio,
+            horarioFin,
+            state,
+            formAssists: JSON.stringify(formAssists || []),
+            formInscriptions: JSON.stringify(formInscriptions || []),
+            assists: JSON.stringify(assists || []),
+            inscriptions: JSON.stringify(inscriptions || [])
+        }
+
+        const result = await EventsModule.updateEvent(id, payload);
 
         if (result.affectedRows === 0) {
             throw new Error('Evento no encontrado');
@@ -170,30 +173,28 @@ export const updateEventForm = async (id, formData) => {
             throw new Error('Los campos formulario son requeridos');
         }
 
-        const [event] = await pool.query('SELECT * FROM events WHERE id = ?', [id]);
+        const event = await EventsModule.getEventById(id);
 
-        if (event.length === 0) {
+        if (!event) {
             throw new Error('Evento no encontrado');
         }
         
-        const eventData = event[0];
-
         if (formData.typeForm === "inscriptions") {
             const { typeForm, ...rest } = formData
-            const inscriptions = typeof eventData.inscriptions === "string" ? JSON.parse(eventData.inscriptions) : eventData.inscriptions
-            eventData.inscriptions = [...inscriptions, rest]
+            const inscriptions = typeof event.inscriptions === "string" ? JSON.parse(event.inscriptions) : event.inscriptions
+            event.inscriptions = [...inscriptions, rest]
         }
 
         if (formData.typeForm === "assists") {
             const { typeForm, ...rest } = formData
-            const assists = typeof eventData.assists === "string" ? JSON.parse(eventData.assists) : eventData.assists
-            eventData.assists = [...assists, rest]
+            const assists = typeof event.assists === "string" ? JSON.parse(event.assists) : event.assists
+            event.assists = [...assists, rest]
         }
 
-        const inscriptionsFormatted = typeof eventData.inscriptions === "object" ? JSON.stringify(eventData.inscriptions) : eventData.inscriptions
-        const assistsFormatted = typeof eventData.assists === "object" ? JSON.stringify(eventData.assists) : eventData.assists
-        
-        const result = await pool.query('UPDATE events SET inscriptions = ?, assists = ? WHERE id = ?', [inscriptionsFormatted, assistsFormatted, id])
+        const inscriptionsFormatted = typeof event.inscriptions === "object" ? JSON.stringify(event.inscriptions) : event.inscriptions
+        const assistsFormatted = typeof event.assists === "object" ? JSON.stringify(event.assists) : event.assists
+
+        const result = await EventsModule.updateEventForm(id, { inscriptions: inscriptionsFormatted, assists: assistsFormatted })
 
         if (result.affectedRows === 0) {
             throw new Error('Evento no encontrado');
@@ -208,7 +209,7 @@ export const updateEventForm = async (id, formData) => {
 
 export const deleteEvent = async (id) => {
     try {
-        const [result] = await pool.query('DELETE FROM events WHERE id = ?', [id]);
+        const result = await EventsModule.deleteEvent(id);
 
         if (result.affectedRows === 0) {
             throw new Error('Evento no encontrado');

@@ -30,7 +30,10 @@ export const CreateScenery = async (req, res) => {
         }
 
         const scenery = await createScenery(name, state);
-        res.status(201).json(scenery);
+        res.status(201).json({
+            message: 'Escenario creado exitosamente',
+            data: scenery
+        });
     } catch (error) {
         console.error('Error al crear escenario:', error);
         if (error.message.includes('requeridos') || error.message.includes('ya existe')) {
@@ -50,7 +53,10 @@ export const UpdateScenery = async (req, res) => {
         }
 
         const scenery = await updateScenery(id, name, state);
-        res.json(scenery);
+        res.json({
+            message: 'Escenario actualizado exitosamente',
+            data: scenery
+        });
     } catch (error) {
         console.error('Error al actualizar escenario:', error);
         if (error.message.includes('requeridos') || error.message.includes('no encontrado')) {
@@ -69,7 +75,10 @@ export const DeleteScenery = async (req, res) => {
         }
 
         const result = await deleteScenery(id);
-        res.json(result);
+        res.json({
+            message: 'Escenario eliminado exitosamente',
+            data: result
+        });
     } catch (error) {
         console.error('Error al eliminar escenario:', error);
         if (error.message.includes('no encontrado')) {

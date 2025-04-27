@@ -22,10 +22,10 @@ export const GetEventById = async (req, res) => {
 
 export const CreateEvent = async (req, res) => {
     try {
-        const eventId = await createEvent(req.body);
+        const event = await createEvent(req.body);
         res.status(201).json({ 
             message: 'Evento creado exitosamente',
-            eventId
+            data: event
         });
     } catch (error) {
         console.error(error);
@@ -35,8 +35,11 @@ export const CreateEvent = async (req, res) => {
 
 export const UpdateEvent = async (req, res) => {
     try {
-        await updateEvent(req.params.id, req.body);
-        res.json({ message: 'Evento actualizado exitosamente' });
+        const event = await updateEvent(req.params.id, req.body);
+        res.json({ 
+            message: 'Evento actualizado exitosamente',
+            data: event
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
@@ -45,8 +48,11 @@ export const UpdateEvent = async (req, res) => {
 
 export const UpdateEventForm = async (req, res) => {
     try {
-        await updateEventForm(req.params.id, req.body);
-        res.json({ message: 'Formulario actualizado exitosamente' });
+        const event = await updateEventForm(req.params.id, req.body);
+        res.json({ 
+            message: 'Formulario actualizado exitosamente',
+            data: event
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
@@ -55,8 +61,11 @@ export const UpdateEventForm = async (req, res) => {
 
 export const DeleteEvent = async (req, res) => {
     try {
-        await deleteEvent(req.params.id);
-        res.json({ message: 'Evento eliminado exitosamente' });
+        const event = await deleteEvent(req.params.id);
+        res.json({ 
+            message: 'Evento eliminado exitosamente',
+            data: event
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });

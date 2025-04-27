@@ -33,8 +33,8 @@ CREATE TABLE events (
     scenery JSON NOT NULL,
     programs JSON NOT NULL,
     cupos VARCHAR(255) NOT NULL,
-    fecha DATE NOT NULL,
-    hora TIME NOT NULL,
+    horarioInicio DATETIME NOT NULL,
+    horarioFin DATETIME NOT NULL,
     state VARCHAR(255) NOT NULL,
     formAssists JSON NOT NULL,
     formInscriptions JSON NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE events (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE scenery (
+CREATE TABLE sceneries (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
     state VARCHAR(255) NOT NULL,

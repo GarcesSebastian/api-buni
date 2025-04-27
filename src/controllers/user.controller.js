@@ -40,8 +40,11 @@ export const GetUserData = async (req, res) => {
 
 export const CreateUser = async (req, res) => {
     try {
-        await createUser(req.body);
-        return res.status(201).json({ message: 'Usuario creado exitosamente' });
+        const user = await createUser(req.body);
+        return res.status(201).json({
+            message: 'Usuario creado exitosamente',
+            data: user
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: error.message });
@@ -50,8 +53,11 @@ export const CreateUser = async (req, res) => {
 
 export const UpdateUser = async (req, res) => {
     try {
-        await updateUser(req.params.id, req.body);
-        return res.json({ message: 'Usuario actualizado exitosamente' });
+        const user = await updateUser(req.params.id, req.body);
+        return res.json({
+            message: 'Usuario actualizado exitosamente',
+            data: user
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: error.message });
@@ -60,8 +66,11 @@ export const UpdateUser = async (req, res) => {
 
 export const DeleteUser = async (req, res) => {
     try {
-        await deleteUser(req.params.id);
-        return res.json({ message: 'Usuario eliminado exitosamente' });
+        const user = await deleteUser(req.params.id);
+        return res.json({
+            message: 'Usuario eliminado exitosamente',
+            data: user
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: error.message });

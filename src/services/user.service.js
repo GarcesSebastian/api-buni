@@ -1,9 +1,10 @@
 import { pool } from '../database/config.js';
 import bcrypt from 'bcryptjs';
+import { UserModule } from '../models/user.module.js';
 
 export const getUsers = async () => {
     try {
-        const [users] = await pool.query('SELECT id, name, email, password, role_id FROM users');
+        const users = await UserModule.getUsers();
         return users;
     } catch (error) {
         console.error('Error en getUsers:', error);
@@ -19,24 +20,31 @@ export const createUser = async (userData) => {
             throw new Error('Todos los campos son requeridos');
         }
 
-        const [existingEmail] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
-        if (existingEmail.length > 0) {
+        const existingEmail = await UserModule.getUserByEmail(email);
+        if (existingEmail) {
             throw new Error('El email ya está registrado');
         }
 
-        const [existingName] = await pool.query('SELECT id FROM users WHERE name = ?', [name]);
-        if (existingName.length > 0) {
+        const existingName = await UserModule.getUserByName(name);
+        if (existingName) {
             throw new Error('El nombre ya está registrado');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const [result] = await pool.query(
-            'INSERT INTO users (name, email, password, role_id) VALUES (?, ?, ?, ?)', 
-            [name, email, hashedPassword, roles.id]
-        );
+        const payload = {
+            name,
+            email,
+            password: hashedPassword,
+            role_id: roles.id
+        }
 
-        return result.insertId;
+        const result = await UserModule.createUser(payload);
+
+        return {
+            id: result.insertId,
+            ...payload
+        };
     } catch (error) {
         console.error('Error en createUser:', error);
         if (error.message.includes('requeridos') || error.message.includes('ya está registrado')) {
@@ -56,10 +64,7 @@ export const updateUser = async (id, userData) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const [result] = await pool.query(
-            'UPDATE users SET name = ?, email = ?, password = ?, role_id = ? WHERE id = ?',
-            [name, email, hashedPassword, roles.id, id]
-        );
+        const result = await UserModule.updateUser(id, { name, email, password: hashedPassword, role_id: roles.id });
 
         if (result.affectedRows === 0) {
             throw new Error('Usuario no encontrado');
@@ -81,7 +86,7 @@ export const deleteUser = async (id) => {
             throw new Error('El ID del usuario es requerido');
         }
 
-        const [result] = await pool.query('DELETE FROM users WHERE id = ?', [id]);
+        const result = await UserModule.deleteUser(id);
 
         if (result.affectedRows === 0) {
             throw new Error('Usuario no encontrado');
