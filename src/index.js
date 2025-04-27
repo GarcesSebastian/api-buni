@@ -60,7 +60,7 @@ app.use(cors({
 const limiter = rateLimit({
     windowMs: process.env.RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
     max: process.env.RATE_LIMIT_MAX,
-    message: { message: 'Too many requests, please try again later.' }
+    message: { message: 'Muchas peticiones, por favor intente mas tarde.' }
 });
 app.use(limiter);
 
