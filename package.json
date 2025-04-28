@@ -26,6 +26,7 @@
     "mysql2": "^3.14.0",
     "response-time": "^2.3.3",
     "socket.io": "^4.8.1",
+    "uuid": "^11.1.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

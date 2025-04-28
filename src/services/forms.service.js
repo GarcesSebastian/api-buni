@@ -2,6 +2,7 @@ import moment from 'moment-timezone'
 import { EventsModule } from '../models/events.module.js';
 import { FormsModule } from '../models/forms.module.js';
 import { SceneryModule } from '../models/scenery.module.js';
+import { Utils } from '../lib/Utils.js';
 
 export const getForms = async () => {
     try {
@@ -60,8 +61,6 @@ export const getFormData = async (eventId, typeForm) => {
             date_now: moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss')
         }
         
-        console.log("time_payload", payload.date_now)
-
         return payload
     } catch (error) {
         console.error('Error en getFormData:', error);
@@ -106,6 +105,7 @@ export const createForm = async (formData) => {
         }
 
         const payload = {
+            id: Utils.generateUUID(),
             name,
             description,
             fields: JSON.stringify(fields),
@@ -115,7 +115,7 @@ export const createForm = async (formData) => {
         const result = await FormsModule.createForm(payload);
 
         return {
-            id: result.insertId,
+            id: payload.id,
             ...payload,
             fields: typeof payload.fields === 'string' ? JSON.parse(payload.fields) : payload.fields
         };

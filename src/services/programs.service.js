@@ -1,4 +1,5 @@
 import { ProgramsModule } from '../models/programs.module.js';
+import { Utils } from '../lib/Utils.js';
 
 export const getPrograms = async () => {
     try {
@@ -37,6 +38,7 @@ export const createProgram = async (name, state) => {
         }
 
         const payload = {
+            id: Utils.generateUUID(),
             name,
             state
         }
@@ -44,7 +46,7 @@ export const createProgram = async (name, state) => {
         const result = await ProgramsModule.createProgram(payload);
 
         return {
-            id: result.insertId,
+            id: payload.id,
             ...payload
         };
     } catch (error) {

@@ -1,6 +1,7 @@
-import { pool } from '../database/config.js';
 import bcrypt from 'bcryptjs';
+import { RoleModule } from '../models/roles.module.js';
 import { UserModule } from '../models/user.module.js';
+import { Utils } from '../lib/Utils.js';
 
 export const getUsers = async () => {
     try {
@@ -30,9 +31,21 @@ export const createUser = async (userData) => {
             throw new Error('El nombre ya está registrado');
         }
 
+        if(roles.id == -1){
+            const roles_module = await RoleModule.getRoles();
+            const role_selected = roles_module[0];
+            roles.id = role_selected.id;
+        }
+
+        const existingRole = await RoleModule.getRoleById(roles.id);
+        if (!existingRole) {
+            throw new Error('El rol especificado no existe');
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const payload = {
+            id: Utils.generateUUID(),
             name,
             email,
             password: hashedPassword,
@@ -42,14 +55,17 @@ export const createUser = async (userData) => {
         const result = await UserModule.createUser(payload);
 
         return {
-            id: result.insertId,
+            id: payload.id,
             ...payload
         };
     } catch (error) {
         console.error('Error en createUser:', error);
-        if (error.message.includes('requeridos') || error.message.includes('ya está registrado')) {
+        if (error.message.includes('requeridos') || 
+            error.message.includes('ya está registrado') || 
+            error.message.includes('no existe')) {
             throw error;
         }
+        
         throw new Error('Error al crear el usuario en la base de datos');
     }
 };

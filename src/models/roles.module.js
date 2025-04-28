@@ -1,6 +1,6 @@
 import { pool } from '../database/config.js';
 
-export const getRoles = async () => {
+const getRoles = async () => {
     try {
         const [rows] = await pool.query('SELECT * FROM roles');
         return rows;
@@ -10,7 +10,7 @@ export const getRoles = async () => {
     }
 }
 
-export const getRoleById = async (id) => {
+const getRoleById = async (id) => {
     try {
         const [rows] = await pool.query('SELECT * FROM roles WHERE id = ?', [id]);
         return rows[0];
@@ -20,7 +20,7 @@ export const getRoleById = async (id) => {
     }
 }
 
-export const createRole = async (role) => {
+const createRole = async (role) => {
     try {
         const [result] = await pool.query('INSERT INTO roles SET ?', [role]);
         return result;
@@ -30,7 +30,7 @@ export const createRole = async (role) => {
     }
 }
 
-export const updateRole = async (id, role) => {
+const updateRole = async (id, role) => {
     try {   
         const [result] = await pool.query('UPDATE roles SET ? WHERE id = ?', [role, id]);
         return result;
@@ -40,7 +40,7 @@ export const updateRole = async (id, role) => {
     }
 }   
 
-export const deleteRole = async (id) => {
+const deleteRole = async (id) => {
     try {
         const [result] = await pool.query('DELETE FROM roles WHERE id = ?', [id]);
         return result;
@@ -71,6 +71,7 @@ const getRoleByName = async (name) => {
 }
 
 export class RoleModule {
+    static getRoles = getRoles;
     static getRoleById = getRoleById;
     static createRole = createRole;
     static updateRole = updateRole;

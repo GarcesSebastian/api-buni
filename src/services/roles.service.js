@@ -1,4 +1,5 @@
 import { RoleModule } from '../models/roles.module.js';
+import { Utils } from '../lib/Utils.js';
 
 export const getRoles = async () => {
     try {
@@ -25,14 +26,19 @@ export const createRole = async (name, permissions) => {
         }
 
         const payload = {   
+            id: Utils.generateUUID(),
             name,
             permissions: JSON.stringify(permissions)
         }
 
         const result = await RoleModule.createRole(payload);
 
+        if (result.affectedRows === 0) {
+            throw new Error('Rol no creado');
+        }
+
         return {
-            id: result.insertId,
+            id: payload.id,
             ...payload,
             permissions: typeof payload.permissions === 'string' ? JSON.parse(payload.permissions) : payload.permissions
         };

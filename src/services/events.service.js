@@ -1,4 +1,8 @@
 import { EventsModule } from '../models/events.module.js';
+import { Utils } from '../lib/Utils.js';
+import { SceneryModule } from '../models/scenery.module.js';
+import { ProgramsModule } from '../models/programs.module.js';
+import { FormsModule } from '../models/forms.module.js';
 
 export const getEvents = async () => {
     try {
@@ -78,7 +82,52 @@ export const createEvent = async (eventData) => {
             throw new Error('Todos los campos son requeridos');
         }
 
+        if(scenery.id == -1){
+            const scenery_module = await SceneryModule.getSceneries();
+            const scenery_selected = scenery_module[0];
+            scenery.id = scenery_selected.id;
+        }
+
+        if(programs.id == -1){
+            const programs_module = await ProgramsModule.getPrograms();
+            const program_selected = programs_module[0];
+            programs.id = program_selected.id;
+        }
+
+        if(formAssists.id == -1){
+            const formAssists_module = await FormsModule.getForms();
+            const formAssists_selected = formAssists_module[0];
+            formAssists.id = formAssists_selected.id;
+        }
+
+        if(formInscriptions.id == -1){
+            const formInscriptions_module = await FormsModule.getForms();
+            const formInscriptions_selected = formInscriptions_module[0];
+            formInscriptions.id = formInscriptions_selected.id;
+        }
+
+        const existingScenery = await SceneryModule.getSceneryById(scenery.id);
+        if (!existingScenery) {
+            throw new Error('El escenario especificado no existe');
+        }
+
+        const existingProgram = await ProgramsModule.getProgramById(programs.id);
+        if (!existingProgram) {
+            throw new Error('El programa especificado no existe');
+        }
+
+        const existingFormAssists = await FormsModule.getFormById(formAssists.id);
+        if (!existingFormAssists) {
+            throw new Error('El formulario de asistencia especificado no existe');
+        }
+
+        const existingFormInscriptions = await FormsModule.getFormById(formInscriptions.id);
+        if (!existingFormInscriptions) {
+            throw new Error('El formulario de inscripción especificado no existe');
+        }
+
         const payload = {
+            id: Utils.generateUUID(),
             nombre,
             organizador,
             scenery: JSON.stringify(scenery),
@@ -100,7 +149,7 @@ export const createEvent = async (eventData) => {
         }
 
         return {
-            id: result.insertId,
+            id: payload.id,
             ...payload,
             scenery: typeof payload.scenery === 'string' ? JSON.parse(payload.scenery) : payload.scenery,
             programs: typeof payload.programs === 'string' ? JSON.parse(payload.programs) : payload.programs,

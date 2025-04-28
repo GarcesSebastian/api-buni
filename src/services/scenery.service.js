@@ -1,4 +1,5 @@
 import { SceneryModule } from '../models/scenery.module.js';
+import { Utils } from '../lib/Utils.js';
 
 export const getSceneries = async () => {
     try {
@@ -37,6 +38,7 @@ export const createScenery = async (name, state) => {
         }
 
         const payload = {
+            id: Utils.generateUUID(),
             name,
             state
         }
@@ -44,12 +46,15 @@ export const createScenery = async (name, state) => {
         const result = await SceneryModule.createScenery(payload);
 
         return {
-            id: result.insertId,
+            id: payload.id,
             ...payload
         };
     } catch (error) {
         console.error('Error en createScenery:', error);
-        throw error;
+        if (error.message.includes('requeridos') || error.message.includes('ya existe')) {
+            throw error;
+        }
+        throw new Error('Error al crear el escenario en la base de datos');
     }
 };
 
