@@ -53,7 +53,6 @@ const deleteForm = async (id) => {
 const getFormByName = async (name) => {
     try {
         const [result] = await pool.query('SELECT * FROM forms WHERE name = ?', [name]);
-        console.log(result);
         return result[0];
     } catch (error) {
         console.error('Error en getFormByName:', error);
