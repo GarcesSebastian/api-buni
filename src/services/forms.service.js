@@ -1,3 +1,4 @@
+import moment from 'moment-timezone'
 import { EventsModule } from '../models/events.module.js';
 import { FormsModule } from '../models/forms.module.js';
 import { SceneryModule } from '../models/scenery.module.js';
@@ -55,9 +56,11 @@ export const getFormData = async (eventId, typeForm) => {
                 ...form,
                 fields: typeof form.fields === 'string' ? JSON.parse(form.fields) : form.fields
             },
-            scenery: scenery
+            scenery: scenery,
+            date_now: moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss')
         }
         
+        console.log("time_payload", payload.date_now)
 
         return payload
     } catch (error) {
