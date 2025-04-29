@@ -76,6 +76,12 @@ app.use("/programs", programsRoutes);
 app.use("/forms", formsRoutes);
 app.use("/experimental", experimentalRoutes);
 
+app.get("/", (req, res) => {
+    res.json({
+        buni: "Estamos conectados uwu"
+    })
+})
+
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
