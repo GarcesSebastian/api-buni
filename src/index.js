@@ -15,6 +15,7 @@ import sceneryRoutes from './routes/scenery.routes.js';
 import programsRoutes from './routes/programs.routes.js';
 import formsRoutes from './routes/forms.routes.js';
 import experimentalRoutes from './routes/experimental.routes.js';
+import emailRoutes from './routes/email.routes.js';
 import { SocketManager } from './lib/SocketManager.js';
 import { Server } from 'socket.io';
 
@@ -75,6 +76,7 @@ app.use("/scenery", sceneryRoutes);
 app.use("/programs", programsRoutes);
 app.use("/forms", formsRoutes);
 app.use("/experimental", experimentalRoutes);
+app.use("/email", emailRoutes);
 
 app.get("/", (req, res) => {
     res.json({

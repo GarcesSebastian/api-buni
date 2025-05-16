@@ -2,6 +2,7 @@ import { pool } from '../database/config.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { getUsers } from '../services/user.service.js';
+import { UserModule } from '../models/user.module.js';
 
 export const VerifySession = async (req, res) => {
     try {
@@ -89,12 +90,16 @@ export const Login = async (req, res) => {
 
         const users = await getUsers();
         const user = users.find(u => u.email === email);
+        const passwordUser = await UserModule.getPasswordByUserId(user.id);
+        if (!passwordUser) {
+            return res.status(401).json({ error: 'Credenciales inválidas' });
+        }
 
         if (!user) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
-        const validPassword = await bcrypt.compare(password, user.password);
+        const validPassword = await bcrypt.compare(password, passwordUser.password);
         if (!validPassword) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }

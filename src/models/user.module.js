@@ -2,7 +2,7 @@ import { pool } from '../database/config.js';
 
 const getUsers = async () => {
     try {
-        const [result] = await pool.query('SELECT * FROM users');
+        const [result] = await pool.query('SELECT id, name, email, role_id FROM users');
         return result;
     } catch (error) {
         console.error('Error en getUsers:', error);
@@ -42,7 +42,7 @@ const deleteUser = async (id) => {
 
 const getUserByEmail = async (email) => {
     try {
-        const [result] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+        const [result] = await pool.query('SELECT id, name, email, role_id FROM users WHERE email = ?', [email]);
         return result[0];
     } catch (error) {
         console.error('Error en getUserByEmail:', error);
@@ -52,13 +52,23 @@ const getUserByEmail = async (email) => {
 
 const getUserByName = async (name) => {
     try {
-        const [result] = await pool.query('SELECT * FROM users WHERE name = ?', [name]);
+        const [result] = await pool.query('SELECT id, name, email, role_id FROM users WHERE name = ?', [name]);
         return result[0];
     } catch (error) {
         console.error('Error en getUserByName:', error);
         throw error;
     }
 };
+
+const getPasswordByUserId = async (id) => {
+    try {
+        const [result] = await pool.query('SELECT password FROM users WHERE id = ?', [id]);
+        return result[0];
+    } catch (error) {
+        console.error('Error en getPasswordByUserId:', error);
+        throw error;
+    }
+}
 
 export class UserModule {
     static getUsers = getUsers;
@@ -67,6 +77,7 @@ export class UserModule {
     static deleteUser = deleteUser;
     static getUserByEmail = getUserByEmail;
     static getUserByName = getUserByName;
+    static getPasswordByUserId = getPasswordByUserId;
 }
 
 

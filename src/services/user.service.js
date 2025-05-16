@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { RoleModule } from '../models/roles.module.js';
 import { UserModule } from '../models/user.module.js';
 import { Utils } from '../lib/Utils.js';
+import { EmailManager } from '../lib/EmailManager.js';
 
 export const getUsers = async () => {
     try {
@@ -52,11 +53,39 @@ export const createUser = async (userData) => {
             role_id: roles.id
         }
 
+        const payloadEmail = {
+            to: email,
+            templateName: 'createAccount',
+            data: {
+                nombre: name,
+                password: password,
+                email: email,
+                role: existingRole.name
+            }
+        }
+
+        const emailManager = new EmailManager();
+        const emailSent = await emailManager.sendEmail(payloadEmail);
+
+        if (!emailSent) {
+            throw new Error('Error al enviar el correo de confirmación');
+        }
+
         const result = await UserModule.createUser(payload);
+
+        if (result.affectedRows === 0) {
+            throw new Error('Error al crear el usuario');
+        }
+
+        const { password: _, ...user } = payload;
 
         return {
             id: payload.id,
-            ...payload
+            ...user,
+            roles: {
+                id: user.role_id,
+                key: "roles"
+            }
         };
     } catch (error) {
         console.error('Error en createUser:', error);
