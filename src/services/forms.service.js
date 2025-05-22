@@ -34,7 +34,8 @@ export const getFormData = async (eventId, typeForm) => {
             assists: undefined,
             inscriptions: undefined,
             formAssists: typeof event.formAssists === 'string' ? JSON.parse(event.formAssists) : event.formAssists,
-            formInscriptions: typeof event.formInscriptions === 'string' ? JSON.parse(event.formInscriptions) : event.formInscriptions
+            formInscriptions: typeof event.formInscriptions === 'string' ? JSON.parse(event.formInscriptions) : event.formInscriptions,
+            formConfig: typeof event.formConfig === 'string' ? JSON.parse(event.formConfig) : event.formConfig
         }
 
         const sceneryId = eventFormatted.scenery.id

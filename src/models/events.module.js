@@ -16,7 +16,8 @@ const getEvents = async () => {
             formAssists, 
             formInscriptions, 
             assists, 
-            inscriptions 
+            inscriptions,
+            formConfig 
         FROM events
     `);
         return events;
@@ -42,13 +43,30 @@ const getEventById = async (id) => {
             formAssists, 
             formInscriptions, 
             assists, 
-            inscriptions 
+            inscriptions,
+            formConfig
         FROM events
         WHERE id = ?
     `, [id]);
         return event[0];
     } catch (error) {
         console.error('Error en getEventById:', error);
+        throw error;
+    }
+};
+
+const getEventConfigFormById = async (id) => {
+    try {
+        const [event] = await pool.query(`
+            SELECT 
+                id, 
+                formConfig
+            FROM events
+            WHERE id = ?
+        `, [id]);
+        return event[0];
+    } catch (error) {
+        console.error('Error en getEventConfigFormById:', error);
         throw error;
     }
 };
@@ -83,6 +101,16 @@ const updateEventForm = async (id, formData) => {
     }
 };
 
+const updateEventConfigForm = async (id, configForm) => {
+    try {
+        const [result] = await pool.query('UPDATE events SET formConfig = ? WHERE id = ?', [configForm, id]);
+        return result;
+    } catch (error) {
+        console.error('Error en updateEventConfigForm:', error);
+        throw error;
+    }
+};
+
 const deleteEvent = async (id) => {
     try {
         const [result] = await pool.query('DELETE FROM events WHERE id = ?', [id]);
@@ -96,8 +124,10 @@ const deleteEvent = async (id) => {
 export class EventsModule {
     static getEvents = getEvents;
     static getEventById = getEventById;
+    static getEventConfigFormById = getEventConfigFormById;
     static createEvent = createEvent;
     static updateEvent = updateEvent;
     static deleteEvent = deleteEvent;
     static updateEventForm = updateEventForm;
+    static updateEventConfigForm = updateEventConfigForm;
 }

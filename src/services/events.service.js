@@ -18,7 +18,8 @@ export const getEvents = async () => {
                 formAssists: typeof event.formAssists === 'string' ? JSON.parse(event.formAssists) : event.formAssists,
                 formInscriptions: typeof event.formInscriptions === 'string' ? JSON.parse(event.formInscriptions) : event.formInscriptions,
                 assists: typeof event.assists === 'string' ? JSON.parse(event.assists) : event.assists,
-                inscriptions: typeof event.inscriptions === 'string' ? JSON.parse(event.inscriptions) : event.inscriptions
+                inscriptions: typeof event.inscriptions === 'string' ? JSON.parse(event.inscriptions) : event.inscriptions,
+                formConfig: typeof event.formConfig === 'string' ? JSON.parse(event.formConfig) : event.formConfig
             };
         });
 
@@ -50,7 +51,8 @@ export const getEventById = async (id) => {
             formAssists: typeof event.formAssists === 'string' ? JSON.parse(event.formAssists) : event.formAssists,
             formInscriptions: typeof event.formInscriptions === 'string' ? JSON.parse(event.formInscriptions) : event.formInscriptions,
             assists: typeof event.assists === 'string' ? JSON.parse(event.assists) : event.assists,
-            inscriptions: typeof event.inscriptions === 'string' ? JSON.parse(event.inscriptions) : event.inscriptions
+            inscriptions: typeof event.inscriptions === 'string' ? JSON.parse(event.inscriptions) : event.inscriptions,
+            formConfig: typeof event.formConfig === 'string' ? JSON.parse(event.formConfig) : event.formConfig
         };
     } catch (error) {
         console.error('Error en getEventById:', error);
@@ -75,7 +77,8 @@ export const createEvent = async (eventData) => {
             formAssists,
             formInscriptions,
             assists,
-            inscriptions
+            inscriptions,
+            formConfig
         } = eventData;
 
         if (!nombre || !organizador || !scenery || !programs || !cupos || !horarioInicio || !horarioFin || state === undefined) {
@@ -139,7 +142,8 @@ export const createEvent = async (eventData) => {
             formAssists: JSON.stringify(formAssists || []),
             formInscriptions: JSON.stringify(formInscriptions || []),
             assists: JSON.stringify(assists || []),
-            inscriptions: JSON.stringify(inscriptions || [])
+            inscriptions: JSON.stringify(inscriptions || []),
+            formConfig: JSON.stringify(formConfig || {})
         }
 
         const result = await EventsModule.createEvent(payload);
@@ -147,6 +151,8 @@ export const createEvent = async (eventData) => {
         if (result.affectedRows === 0) {
             throw new Error('Evento no creado');
         }
+
+        const eventConfigForm = await EventsModule.getEventConfigFormById(payload.id);
 
         return {
             id: payload.id,
@@ -156,7 +162,8 @@ export const createEvent = async (eventData) => {
             formAssists: typeof payload.formAssists === 'string' ? JSON.parse(payload.formAssists) : payload.formAssists,
             formInscriptions: typeof payload.formInscriptions === 'string' ? JSON.parse(payload.formInscriptions) : payload.formInscriptions,
             assists: typeof payload.assists === 'string' ? JSON.parse(payload.assists) : payload.assists,
-            inscriptions: typeof payload.inscriptions === 'string' ? JSON.parse(payload.inscriptions) : payload.inscriptions
+            inscriptions: typeof payload.inscriptions === 'string' ? JSON.parse(payload.inscriptions) : payload.inscriptions,
+            formConfig: typeof eventConfigForm.formConfig === 'string' ? JSON.parse(eventConfigForm.formConfig) : eventConfigForm.formConfig
         };
     } catch (error) {
         console.error('Error en createEvent:', error);
@@ -178,7 +185,8 @@ export const updateEvent = async (id, eventData) => {
             formAssists,
             formInscriptions,
             assists,
-            inscriptions
+            inscriptions,
+            formConfig
         } = eventData;
 
         if (!nombre || !organizador || !scenery || !programs || !cupos || !horarioInicio || !horarioFin || state === undefined) {
@@ -197,7 +205,8 @@ export const updateEvent = async (id, eventData) => {
             formAssists: JSON.stringify(formAssists || []),
             formInscriptions: JSON.stringify(formInscriptions || []),
             assists: JSON.stringify(assists || []),
-            inscriptions: JSON.stringify(inscriptions || [])
+            inscriptions: JSON.stringify(inscriptions || []),
+            formConfig: JSON.stringify(formConfig || {})
         }
 
         const result = await EventsModule.updateEvent(id, payload);
@@ -243,7 +252,14 @@ export const updateEventForm = async (id, formData) => {
         const inscriptionsFormatted = typeof event.inscriptions === "object" ? JSON.stringify(event.inscriptions) : event.inscriptions
         const assistsFormatted = typeof event.assists === "object" ? JSON.stringify(event.assists) : event.assists
 
-        const result = await EventsModule.updateEventForm(id, { inscriptions: inscriptionsFormatted, assists: assistsFormatted })
+        const payload = {
+            inscriptions: inscriptionsFormatted,
+            assists: assistsFormatted
+        }
+
+        console.log(payload)
+
+        const result = await EventsModule.updateEventForm(id, payload)
 
         if (result.affectedRows === 0) {
             throw new Error('Evento no encontrado');
@@ -252,6 +268,27 @@ export const updateEventForm = async (id, formData) => {
         return true;
     } catch (error) {
         console.error('Error en updateEventForm:', error);
+        throw error;
+    }
+};
+
+export const updateEventConfigForm = async (id, configForm) => {
+    try {
+        const event = await EventsModule.getEventById(id);
+
+        if (!event) {
+            throw new Error('Evento no encontrado');
+        }
+
+        const result = await EventsModule.updateEventConfigForm(id, JSON.stringify(configForm));
+
+        if (result.affectedRows === 0) {
+            throw new Error('Evento no encontrado');
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error en updateEventConfigForm:', error);
         throw error;
     }
 };

@@ -40,6 +40,16 @@ const deleteUser = async (id) => {
     }
 };
 
+const getUserById = async (id) => {
+    try {
+        const [result] = await pool.query('SELECT id, name, email, role_id FROM users WHERE id = ?', [id]);
+        return result[0];
+    } catch (error) {
+        console.error('Error en getUserById:', error);
+        throw error;
+    }
+};
+
 const getUserByEmail = async (email) => {
     try {
         const [result] = await pool.query('SELECT id, name, email, role_id FROM users WHERE email = ?', [email]);
@@ -75,6 +85,7 @@ export class UserModule {
     static createUser = createUser;
     static updateUser = updateUser;
     static deleteUser = deleteUser;
+    static getUserById = getUserById;
     static getUserByEmail = getUserByEmail;
     static getUserByName = getUserByName;
     static getPasswordByUserId = getPasswordByUserId;

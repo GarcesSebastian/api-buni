@@ -2,6 +2,7 @@ import path from 'path';
 import { createAccountEmail } from '../views/createAccount.js';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { recoverPassword } from '../views/recoverPassword.js';
 
 dotenv.config();
 
@@ -27,19 +28,21 @@ export class EmailManager {
             throw new Error("Data is required");
         }
 
-        if (!data.nombre || !data.password || !data.email || !data.role) {
-            throw new Error("All fields are required in data");
-        }
-
-        const createAccountTemplate = await createAccountEmail(
+        const createAccountTemplate = createAccountEmail(
             data.nombre, 
             data.password, 
             data.email, 
             data.role
         );
 
+        const recoverPasswordTemplate = recoverPassword(
+            data.nombre,
+            data.recoveryCode
+        );
+
         const templates = {
             createAccount: createAccountTemplate,
+            recoverPassword: recoverPasswordTemplate
         };
 
         return templates[templateName] || null;

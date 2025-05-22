@@ -1,4 +1,4 @@
-export const createAccountEmail = async (nombre, password, email, role) => {
+export const createAccountEmail = (nombre, password, email, role) => {
     const currentYear = new Date().getFullYear();
     const logoUrl = "https://i.ibb.co/K8mMDbP/Logo.png"; 
 

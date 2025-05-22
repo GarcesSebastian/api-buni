@@ -6,6 +6,10 @@ export class Utils {
         return uuidv4();
     }
 
+    static delay(time) {
+        return new Promise(resolve => setTimeout(resolve, time));
+    }
+
     static async convertToBase64(url) {
         return new Promise((resolve, reject) => {
             https.get(url, (response) => {

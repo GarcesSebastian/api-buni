@@ -1,4 +1,4 @@
-import { getUsers, createUser, updateUser, deleteUser } from '../services/user.service.js';
+import { getUsers, createUser, updateUser, deleteUser, recoveryPassword, verifyRecoveryPassword, changePassword } from '../services/user.service.js';
 import { getEvents } from '../services/events.service.js';
 import { getPrograms } from '../services/programs.service.js';
 import { getSceneries } from '../services/scenery.service.js';
@@ -54,6 +54,7 @@ export const CreateUser = async (req, res) => {
 export const UpdateUser = async (req, res) => {
     try {
         const user = await updateUser(req.params.id, req.body);
+
         return res.json({
             message: 'Usuario actualizado exitosamente',
             data: user
@@ -64,9 +65,52 @@ export const UpdateUser = async (req, res) => {
     }
 };
 
+export const RecoveryPassword = async (req, res) => {
+    try {
+        const user = await recoveryPassword(req.params.id);
+
+        return res.json({
+            message: 'Código de recuperación enviado exitosamente',
+            data: user
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+export const VerifyRecoveryPassword = async (req, res) => {
+    try {
+        const user = await verifyRecoveryPassword(req.params.id, req.body.code);
+
+        return res.json({
+            message: 'Código de recuperación verificado exitosamente',
+            data: user
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+export const ChangePassword = async (req, res) => {
+    try {
+        const user = await changePassword(req.params.id, req.body.password);
+
+        return res.json({
+            message: 'Contraseña cambiada exitosamente',
+            data: user
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
+}
+
 export const DeleteUser = async (req, res) => {
     try {
         const user = await deleteUser(req.params.id);
+
         return res.json({
             message: 'Usuario eliminado exitosamente',
             data: user
