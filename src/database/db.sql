@@ -40,18 +40,7 @@ CREATE TABLE events (
     formInscriptions JSON NOT NULL,
     assists JSON NOT NULL,
     inscriptions JSON NOT NULL,
-    formConfig JSON DEFAULT '{
-        inscriptions: {
-            enabled: false,
-            startDate: "",
-            endDate: ""
-        },
-        assists: {
-            enabled: false,
-            startDate: "",
-            endDate: ""
-        }
-    }',
+    formConfig JSON NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -78,13 +67,11 @@ CREATE TABLE forms (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Trigger para asegurar que formConfig siempre tenga un valor válido
 DELIMITER //
 CREATE TRIGGER before_event_insert
 BEFORE INSERT ON events
 FOR EACH ROW
 BEGIN
-    -- Si formConfig es NULL o un JSON vacío ('{}')
     IF NEW.formConfig IS NULL OR JSON_LENGTH(NEW.formConfig) = 0 THEN
         SET NEW.formConfig = JSON_OBJECT(
             'inscriptions', JSON_OBJECT(
