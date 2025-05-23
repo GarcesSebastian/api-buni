@@ -236,10 +236,18 @@ export const updateEventForm = async (id, formData) => {
         if (!event) {
             throw new Error('Evento no encontrado');
         }
-        
+
         if (formData.typeForm === "inscriptions") {
             const { typeForm, ...rest } = formData
             const inscriptions = typeof event.inscriptions === "string" ? JSON.parse(event.inscriptions) : event.inscriptions
+
+            const maxCupos = event.cupos;
+            const currentCupos = inscriptions.length;
+
+            if(currentCupos >= maxCupos){
+                throw new Error('No hay cupos disponibles');
+            }
+
             event.inscriptions = [...inscriptions, rest]
         }
 
@@ -256,8 +264,6 @@ export const updateEventForm = async (id, formData) => {
             inscriptions: inscriptionsFormatted,
             assists: assistsFormatted
         }
-
-        console.log(payload)
 
         const result = await EventsModule.updateEventForm(id, payload)
 

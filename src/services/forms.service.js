@@ -59,7 +59,8 @@ export const getFormData = async (eventId, typeForm) => {
                 fields: typeof form.fields === 'string' ? JSON.parse(form.fields) : form.fields
             },
             scenery: scenery,
-            date_now: moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss')
+            date_now: moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss'),
+            current: typeof event.inscriptions == "string" ? JSON.parse(event.inscriptions).length : event.inscriptions.length
         }
         
         return payload
