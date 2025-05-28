@@ -1,7 +1,7 @@
 class CodeManager {
     static Codes = new Map();
     static Times = new Map();
-    static waitTime = 0.5 * 60 * 1000;
+    static waitTime = 30 * 60 * 1000;
 
     static generateCode() {
         const code = Math.floor(100000 + Math.random() * 900000);
