@@ -102,15 +102,9 @@ export const createUser = async (userData) => {
 
 export const updateUser = async (id, userData) => {
     try {
-        const { name, email, password, roles } = userData;
+        const { name, email, roles } = userData;
 
-        if (!name || !email || !password || !roles) {
-            throw new Error('Todos los campos son requeridos');
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const result = await UserModule.updateUser(id, { name, email, password: hashedPassword, role_id: roles.id });
+        const result = await UserModule.updateUser(id, { name, email, role_id: roles.id });
 
         if (result.affectedRows === 0) {
             throw new Error('Usuario no encontrado');
