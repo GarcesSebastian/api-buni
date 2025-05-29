@@ -55,6 +55,19 @@ export class SocketManager {
                 });
             });
 
+            socket.on("UPDATE_USER", (data) => {
+                SocketManager.users.forEach((user) => {
+                    if(user.data.email == data.email){
+                        user.data = {
+                            ...user.data,
+                            ...data
+                        }
+                        
+                        user.socket.emit("UPDATE_USER", user.data);
+                    }
+                });
+            })
+
             socket.on("UPDATE_EVENT_FORMS", (data) => {
                 SocketManager.users.forEach((user) => {
                     if(socket.id !== user.socket.id && user.data.token){
