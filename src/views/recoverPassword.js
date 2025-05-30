@@ -1,6 +1,6 @@
 export const recoverPassword = (nombre, recoveryCode) => {
     const currentYear = new Date().getFullYear();
-    const logoUrl = "https://i.ibb.co/K8mMDbP/Logo.png"; 
+    const logoUrl = process.env.LOGO_URL;
 
     const recoverPasswordTemplate = `
         <!DOCTYPE html>
