@@ -7,7 +7,7 @@ import { FormsModule } from '../models/forms.module.js';
 export const getEvents = async () => {
     try {
         const events = await EventsModule.getEvents();
-        
+
         const eventsData = events.map(event => {
             return {
                 ...event,
@@ -82,28 +82,38 @@ export const createEvent = async (eventData) => {
         } = eventData;
 
         if (!nombre || !organizador || !scenery || !programs || !cupos || !horarioInicio || !horarioFin || state === undefined) {
+            console.log('Campos faltantes en createEvent:', {
+                nombre: !!nombre,
+                organizador: !!organizador,
+                scenery: !!scenery,
+                programs: !!programs,
+                cupos: !!cupos,
+                horarioInicio: !!horarioInicio,
+                horarioFin: !!horarioFin,
+                state: state !== undefined
+            });
             throw new Error('Todos los campos son requeridos');
         }
 
-        if(scenery.id == -1){
+        if (scenery.id == -1) {
             const scenery_module = await SceneryModule.getSceneries();
             const scenery_selected = scenery_module[0];
             scenery.id = scenery_selected.id;
         }
 
-        if(programs.id == -1){
+        if (programs.id == -1) {
             const programs_module = await ProgramsModule.getPrograms();
             const program_selected = programs_module[0];
             programs.id = program_selected.id;
         }
 
-        if(formAssists.id == -1){
+        if (formAssists.id == -1) {
             const formAssists_module = await FormsModule.getForms();
             const formAssists_selected = formAssists_module[0];
             formAssists.id = formAssists_selected.id;
         }
 
-        if(formInscriptions.id == -1){
+        if (formInscriptions.id == -1) {
             const formInscriptions_module = await FormsModule.getForms();
             const formInscriptions_selected = formInscriptions_module[0];
             formInscriptions.id = formInscriptions_selected.id;
@@ -241,10 +251,10 @@ export const updateEventForm = async (id, formData) => {
             const { typeForm, ...rest } = formData
             const inscriptions = typeof event.inscriptions === "string" ? JSON.parse(event.inscriptions) : event.inscriptions
 
-            const maxCupos = event.cupos;
+            const maxCupos = Number(event.cupos);
             const currentCupos = inscriptions.length;
 
-            if(currentCupos >= maxCupos){
+            if (maxCupos !== -1 && currentCupos >= maxCupos) {
                 throw new Error('No hay cupos disponibles');
             }
 

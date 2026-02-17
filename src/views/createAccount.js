@@ -1,6 +1,7 @@
 export const createAccountEmail = (nombre, password, email, role) => {
     const currentYear = new Date().getFullYear();
-    const logoUrl = process.env.LOGO_URL; 
+    const frontendUrl = process.env.FRONTEND_URL;
+    const logoUrl = `${frontendUrl}/logo.png`;
 
     const emailTemplate = `
         <!DOCTYPE html>

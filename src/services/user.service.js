@@ -18,7 +18,7 @@ export const getUsers = async () => {
 export const createUser = async (userData) => {
     try {
         const { name, email, password, roles } = userData;
-        
+
         if (!name || !email || !password || !roles) {
             throw new Error('Todos los campos son requeridos');
         }
@@ -33,7 +33,7 @@ export const createUser = async (userData) => {
             throw new Error('El nombre ya está registrado');
         }
 
-        if(roles.id == -1){
+        if (roles.id == -1) {
             const roles_module = await RoleModule.getRoles();
             const role_selected = roles_module[0];
             roles.id = role_selected.id;
@@ -65,17 +65,17 @@ export const createUser = async (userData) => {
             }
         }
 
-        const emailManager = new EmailManager();
-        const emailSent = await emailManager.sendEmail(payloadEmail);
-
-        if (!emailSent) {
-            throw new Error('Error al enviar el correo de confirmación');
-        }
-
         const result = await UserModule.createUser(payload);
 
         if (result.affectedRows === 0) {
             throw new Error('Error al crear el usuario');
+        }
+
+        try {
+            const emailManager = new EmailManager();
+            await emailManager.sendEmail(payloadEmail);
+        } catch (emailError) {
+            console.error('Error al enviar el correo, pero el usuario fue creado:', emailError.message);
         }
 
         const { password: _, ...user } = payload;
@@ -90,12 +90,12 @@ export const createUser = async (userData) => {
         };
     } catch (error) {
         console.error('Error en createUser:', error);
-        if (error.message.includes('requeridos') || 
-            error.message.includes('ya está registrado') || 
+        if (error.message.includes('requeridos') ||
+            error.message.includes('ya está registrado') ||
             error.message.includes('no existe')) {
             throw error;
         }
-        
+
         throw new Error('Error al crear el usuario en la base de datos');
     }
 };
@@ -124,7 +124,7 @@ export const recoveryPassword = async (id) => {
     try {
         const user = await UserModule.getUserById(id);
 
-        if(!user){
+        if (!user) {
             throw new Error('El usuario no existe');
         }
 
@@ -148,7 +148,7 @@ export const recoveryPassword = async (id) => {
         }
 
         console.log(CodeManager.getCodes())
-        
+
         return true;
     } catch (error) {
         console.error('Error en recoveryPassword:', error);
@@ -160,19 +160,19 @@ export const verifyRecoveryPassword = async (id, code) => {
     try {
         const user = await UserModule.getUserById(id);
 
-        if(!user){
+        if (!user) {
             throw new Error('El usuario no existe');
         }
 
         const recoveryCode = CodeManager.getCode(id);
 
-        if(!recoveryCode){
+        if (!recoveryCode) {
             throw new Error('El codigo de recuperación no existe');
         }
 
         const isCodeValid = CodeManager.verifyCode(id, code);
 
-        if(!isCodeValid){
+        if (!isCodeValid) {
             throw new Error('El codigo de recuperación no es válido');
         }
 
@@ -187,7 +187,7 @@ export const changePassword = async (id, password) => {
     try {
         const user = await UserModule.getUserById(id);
 
-        if(!user){
+        if (!user) {
             throw new Error('El usuario no existe');
         }
 
