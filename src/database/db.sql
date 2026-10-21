@@ -2,10 +2,12 @@ DROP DATABASE IF EXISTS buni;
 CREATE DATABASE buni;
 USE buni;
 
+-- Drop children before parents (FK-safe ordering).
+DROP TABLE IF EXISTS event_submissions;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS events;
-DROP TABLE IF EXISTS scenery;
+DROP TABLE IF EXISTS sceneries;
 DROP TABLE IF EXISTS programs;
 DROP TABLE IF EXISTS forms;
 

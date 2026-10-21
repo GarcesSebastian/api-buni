@@ -1,0 +1,106 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`programs endpoints (not-found DIVERGES from scenery: 500 not 400) > DELETE /programs/:id existing -> 200 {message,data:true} 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Programa eliminado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`programs endpoints (not-found DIVERGES from scenery: 500 not 400) > DELETE /programs/<missing> -> current 500 generic (NOT 400 — diverges from scenery) 1`] = `
+{
+  "body": {
+    "error": "Error al eliminar el programa de la base de datos",
+  },
+  "status": 500,
+}
+`;
+
+exports[`programs endpoints (not-found DIVERGES from scenery: 500 not 400) > GET /programs -> bare array (public) 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<created_at>",
+      "id": "prog-0000-0000-0000-000000000001",
+      "name": "Programa A",
+      "state": "active",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`programs endpoints (not-found DIVERGES from scenery: 500 not 400) > GET /programs/:id existing -> bare object 1`] = `
+{
+  "body": {
+    "created_at": "<created_at>",
+    "id": "prog-0000-0000-0000-000000000001",
+    "name": "Programa A",
+    "state": "active",
+  },
+  "status": 200,
+}
+`;
+
+exports[`programs endpoints (not-found DIVERGES from scenery: 500 not 400) > GET /programs/<missing> -> current 500 generic (no 404) 1`] = `
+{
+  "body": {
+    "error": "Error al obtener el programa de la base de datos",
+  },
+  "status": 500,
+}
+`;
+
+exports[`programs endpoints (not-found DIVERGES from scenery: 500 not 400) > POST /programs -> 201 {message,data} 1`] = `
+{
+  "body": {
+    "data": {
+      "id": "<uuid>",
+      "name": "Programa Nuevo",
+      "state": "active",
+    },
+    "message": "Programa creado exitosamente",
+  },
+  "status": 201,
+}
+`;
+
+exports[`programs endpoints (not-found DIVERGES from scenery: 500 not 400) > POST /programs duplicate name -> current 500 generic (preserved) 1`] = `
+{
+  "body": {
+    "error": "Error al crear el programa en la base de datos",
+  },
+  "status": 500,
+}
+`;
+
+exports[`programs endpoints (not-found DIVERGES from scenery: 500 not 400) > POST /programs missing fields -> 400 Todos los campos son requeridos 1`] = `
+{
+  "body": {
+    "error": "Todos los campos son requeridos",
+  },
+  "status": 400,
+}
+`;
+
+exports[`programs endpoints (not-found DIVERGES from scenery: 500 not 400) > PUT /programs/:id existing -> 200 {message,data:true} 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Programa actualizado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`programs endpoints (not-found DIVERGES from scenery: 500 not 400) > PUT /programs/<missing> -> current 500 generic (NOT 400 — diverges from scenery) 1`] = `
+{
+  "body": {
+    "error": "Error al actualizar el programa en la base de datos",
+  },
+  "status": 500,
+}
+`;

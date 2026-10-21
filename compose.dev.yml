@@ -1,0 +1,71 @@
+name: buni-dev
+services:
+  db:
+    image: mysql:8.0.42
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-buni}
+      # NO se define MYSQL_DATABASE: db.sql hace CREATE DATABASE buni.
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - buni-db-data:/var/lib/mysql
+      - ./src/database/db.sql:/docker-entrypoint-initdb.d/01-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-buni}
+      DB_NAME: buni
+      DB_PORT: "3306"
+      CORS_ORIGINS: http://localhost:3000
+      FRONTEND_URL: http://localhost:3000
+      APP_API_TOPOLOGY: same-site
+      JWT_SECRET: ${JWT_SECRET:-dev_jwt_secret_change_me_min_32_chars_0001}
+      ADMIN_NAME: ${ADMIN_NAME:-admin}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@buni.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin1234}
+      ADMIN_ROLE: admin
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ${SMTP_USER:-dev}
+      SMTP_PASS: ${SMTP_PASS:-dev}
+    ports:
+      - "4000:4000"
+    volumes:
+      - buni-uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ../Buni
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4000
+        NEXT_PUBLIC_WEBSOCKET_URL: http://localhost:4000
+    environment:
+      # Runtime-only (NOT a build arg): server-side base URL used by
+      # src/middleware.ts and server-side apiFetch. The web container reaches the
+      # API via the internal service name, never the browser's localhost.
+      INTERNAL_API_URL: http://api:4000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  buni-db-data: {}
+  buni-uploads: {}

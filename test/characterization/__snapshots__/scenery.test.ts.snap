@@ -1,0 +1,115 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`scenery endpoints > DELETE /scenery/:id existing -> 200 {message,data:true} 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Escenario eliminado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`scenery endpoints > DELETE /scenery/<missing> -> current 400 Escenario no encontrado 1`] = `
+{
+  "body": {
+    "error": "Escenario no encontrado",
+  },
+  "status": 400,
+}
+`;
+
+exports[`scenery endpoints > GET /scenery -> bare array (public) 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<created_at>",
+      "id": "scen-0000-0000-0000-000000000001",
+      "name": "Escenario A",
+      "state": "active",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`scenery endpoints > GET /scenery/:id existing -> bare object 1`] = `
+{
+  "body": {
+    "created_at": "<created_at>",
+    "id": "scen-0000-0000-0000-000000000001",
+    "name": "Escenario A",
+    "state": "active",
+  },
+  "status": 200,
+}
+`;
+
+exports[`scenery endpoints > GET /scenery/<missing> -> current 500 generic (no 404) 1`] = `
+{
+  "body": {
+    "error": "Error al obtener el escenario de la base de datos",
+  },
+  "status": 500,
+}
+`;
+
+exports[`scenery endpoints > POST /scenery -> 201 {message,data} 1`] = `
+{
+  "body": {
+    "data": {
+      "id": "<uuid>",
+      "name": "Escenario Nuevo",
+      "state": "active",
+    },
+    "message": "Escenario creado exitosamente",
+  },
+  "status": 201,
+}
+`;
+
+exports[`scenery endpoints > POST /scenery duplicate name -> current 500 generic (preserved) 1`] = `
+{
+  "body": {
+    "error": "Error al crear el escenario en la base de datos",
+  },
+  "status": 500,
+}
+`;
+
+exports[`scenery endpoints > POST /scenery falsy state (state:"") -> current 400 Todos los campos son requeridos 1`] = `
+{
+  "body": {
+    "error": "Todos los campos son requeridos",
+  },
+  "status": 400,
+}
+`;
+
+exports[`scenery endpoints > POST /scenery missing fields -> 400 Todos los campos son requeridos 1`] = `
+{
+  "body": {
+    "error": "Todos los campos son requeridos",
+  },
+  "status": 400,
+}
+`;
+
+exports[`scenery endpoints > PUT /scenery/:id existing -> 200 {message,data:true} 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Escenario actualizado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`scenery endpoints > PUT /scenery/<missing> -> current 400 Escenario no encontrado 1`] = `
+{
+  "body": {
+    "error": "Escenario no encontrado",
+  },
+  "status": 400,
+}
+`;

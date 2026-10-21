@@ -1,0 +1,164 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`forms endpoints > DELETE /forms/:id existing -> 200 {message,data:true} 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Formulario eliminado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`forms endpoints > DELETE /forms/<missing> -> 404 no encontrado 1`] = `
+{
+  "body": {
+    "error": "Formulario no encontrado",
+  },
+  "status": 404,
+}
+`;
+
+exports[`forms endpoints > GET /forms -> bare array (public) 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<created_at>",
+      "description": "Formulario base de inscripción",
+      "fields": [
+        {
+          "name": "nombre",
+          "type": "text",
+        },
+      ],
+      "id": "form-0000-0000-0000-000000000001",
+      "name": "Formulario de inscripción",
+      "state": "active",
+    },
+    {
+      "created_at": "<created_at>",
+      "description": "Formulario base de asistencia",
+      "fields": [
+        {
+          "name": "nombre",
+          "type": "text",
+        },
+      ],
+      "id": "form-0000-0000-0000-000000000002",
+      "name": "Formulario de asistencia",
+      "state": "active",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`forms endpoints > GET /forms/:id -> {message,data} 1`] = `
+{
+  "body": {
+    "data": {
+      "created_at": "<created_at>",
+      "description": "Formulario base de inscripción",
+      "fields": [
+        {
+          "name": "nombre",
+          "type": "text",
+        },
+      ],
+      "id": "form-0000-0000-0000-000000000001",
+      "name": "Formulario de inscripción",
+      "state": "active",
+    },
+    "message": "Formulario obtenido exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`forms endpoints > GET /forms/:type/:id (GetFormData) -> bare {event,form,scenery,date_now,current} 1`] = `
+[
+  "current",
+  "date_now",
+  "event",
+  "form",
+  "scenery",
+]
+`;
+
+exports[`forms endpoints > GET /forms/:type/:id (GetFormData) -> bare {event,form,scenery,date_now,current} 2`] = `0`;
+
+exports[`forms endpoints > GET /forms/:type/<missing> (GetFormData not-found) -> current 500 (no 404) 1`] = `
+{
+  "body": {
+    "error": "Evento no encontrado",
+  },
+  "status": 500,
+}
+`;
+
+exports[`forms endpoints > GET /forms/<missing> (GetFormById) -> 404 no encontrado 1`] = `
+{
+  "body": {
+    "error": "Formulario no encontrado",
+  },
+  "status": 404,
+}
+`;
+
+exports[`forms endpoints > POST /forms -> 201 {message,data} 1`] = `
+{
+  "body": {
+    "data": {
+      "description": "desc",
+      "fields": [
+        {
+          "name": "x",
+          "type": "text",
+        },
+      ],
+      "id": "<uuid>",
+      "name": "Formulario Nuevo",
+      "state": "active",
+    },
+    "message": "Formulario creado exitosamente",
+  },
+  "status": 201,
+}
+`;
+
+exports[`forms endpoints > POST /forms duplicate name -> current 500 Ya existe un formulario con ese nombre (preserved) 1`] = `
+{
+  "body": {
+    "error": "Ya existe un formulario con ese nombre",
+  },
+  "status": 500,
+}
+`;
+
+exports[`forms endpoints > POST /forms missing fields -> 400 requeridos 1`] = `
+{
+  "body": {
+    "error": "Todos los campos son requeridos",
+  },
+  "status": 400,
+}
+`;
+
+exports[`forms endpoints > PUT /forms/:id existing -> 200 {message,data:true} 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Formulario actualizado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`forms endpoints > PUT /forms/<missing> -> 404 no encontrado 1`] = `
+{
+  "body": {
+    "error": "Formulario no encontrado",
+  },
+  "status": 404,
+}
+`;

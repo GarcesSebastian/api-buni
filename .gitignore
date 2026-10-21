@@ -2,3 +2,11 @@
 .env
 package-lock.json
 /uploads
+/dist
+/coverage
+boot.out
+boot.err
+/.agents
+/.worktrees
+.agents
+.worktrees

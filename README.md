@@ -445,6 +445,114 @@ Para contribuir al proyecto:
 4. 🚀 Push a la rama (`git push origin feature/AmazingFeature`)
 5. 📨 Abrir un Pull Request
 
+## 🔌 Contrato de WebSocket compartido
+
+El contrato de socket.io (eventos y payloads) es la **única fuente de verdad** en
+`src/contracts/socket.ts` (tipos) + `src/schemas/socket.ts` (validación Zod en el servidor).
+
+El frontend consume un **espejo solo-de-tipos** en `Buni/src/types/contract.generated.ts`, generado por:
+
+```bash
+npm run export:contract
+```
+
+El archivo generado lleva un encabezado `GENERATED FROM api-buni@<commit> — DO NOT EDIT BY HAND`.
+Tras cualquier cambio en el contrato debes **regenerar y commitear** el espejo. La verificación es
+`git diff --exit-code` sobre `Buni/src/types/contract.generated.ts`: si el espejo está desactualizado,
+el build del frontend falla. Como son dos repos separados, este chequeo es manual-pero-obligatorio.
+
+## 🧰 Servidor: stack, scripts y ejecución
+
+Sección técnica del servidor para ejecutar, construir y desplegar la API tal como está hoy.
+
+### Stack real
+
+- **Runtime**: Node.js 20 (imágenes Docker fijadas a `node:20.19.1-alpine3.21`).
+- **Framework**: Express 4 sobre TypeScript en **ESM** (`"type": "module"`), compilado a `dist/` con
+  `tsc -p tsconfig.build.json`. Arranque: `node dist/index.js`.
+- **Base de datos**: MySQL 8 vía `mysql2` (queries directas; el esquema se siembra con
+  `src/database/db.sql`).
+- **Tiempo real**: Socket.IO 4 (contrato compartido en `src/contracts/socket.ts` +
+  `src/schemas/socket.ts`).
+- **Validación**: Zod 3 (variables de entorno en `src/config/env.ts`; payloads de socket y endpoints).
+- **Auth y seguridad**: JWT (`jsonwebtoken`), hashing con `bcryptjs`, `helmet`, `cors`,
+  `express-rate-limit`, `cookie-parser`.
+- **Correo**: `nodemailer` (SMTP).
+
+### Scripts (`package.json`)
+
+| Script | Comando | Para qué |
+|---|---|---|
+| `npm run dev` | `tsx watch src/index.ts` | Desarrollo con recarga en caliente |
+| `npm run build` | `tsc -p tsconfig.build.json` | Compila `src/` → `dist/` |
+| `npm start` | `node dist/index.js` | Arranca la build de producción |
+| `npm run export:contract` | `tsx scripts/export-contract.ts` | Regenera el espejo de tipos del contrato de socket para el frontend |
+| `npm test` | `vitest run` | Tests (una sola pasada) |
+| `npm run typecheck` | `tsc --noEmit` | Comprobación de tipos sin emitir |
+| `npm run lint` | `eslint .` | Linter |
+| `npm run format` | `prettier --write .` | Formateo |
+
+### Variables de entorno (`src/config/env.ts`)
+
+Validadas con Zod al arrancar; si alguna obligatoria falta o es inválida, el proceso termina con
+`exit(1)`.
+
+| Variable | Obligatoria | Por defecto | Notas |
+|---|---|---|---|
+| `NODE_ENV` | no | `development` | `development` \| `test` \| `production` |
+| `PORT` | no | `4000` | Puerto del servidor |
+| `DB_HOST` | sí | — | Host de MySQL |
+| `DB_USER` | sí | — | Usuario de MySQL |
+| `DB_PASSWORD` | no | `""` | MySQL admite contraseña vacía |
+| `DB_NAME` | sí | — | Debe ser `buni` (el `db.sql` hace `USE buni`) |
+| `DB_PORT` | no | `3306` | Puerto de MySQL |
+| `CORS_ORIGINS` | sí | — | Orígenes permitidos, separados por coma |
+| `JWT_SECRET` | sí | — | 32+ caracteres y distinto de `your_secret_key` |
+| `ADMIN_NAME` | sí | — | Admin por defecto |
+| `ADMIN_EMAIL` | sí | — | Debe ser un email válido |
+| `ADMIN_PASSWORD` | sí | — | Admin por defecto |
+| `ADMIN_ROLE` | no | `admin` | Rol del admin por defecto |
+| `RATE_LIMIT_WINDOW_MINUTES` | no | `15` | Ventana del rate limit |
+| `RATE_LIMIT_MAX` | no | `100` | Máximo de peticiones por ventana |
+| `SMTP_HOST` | sí | — | Servidor SMTP |
+| `SMTP_PORT` | sí | — | Puerto SMTP |
+| `SMTP_USER` | sí | — | Usuario SMTP |
+| `SMTP_PASS` | sí | — | Contraseña SMTP |
+| `FRONTEND_URL` | sí | — | URL del frontend (debe ser una URL válida) |
+| `APP_API_TOPOLOGY` | no | `cross-site` | `cross-site` \| `same-site`; elige el `SameSite` de la cookie |
+| `ZOD_ENFORCE` | no | `false` | `true` fuerza validación Zod estricta |
+
+### Ejecutar en local (sin Docker)
+
+```bash
+npm ci            # instalar dependencias (o npm install)
+# crea un .env con las variables de arriba (necesitas un MySQL accesible)
+npm run dev       # desarrollo con recarga
+# o, para producción local:
+npm run build && npm start
+```
+
+### Ejecutar con Docker
+
+La API se empaqueta con un `Dockerfile` multi-stage (usuario no-root `node`, expone `4000`, volumen
+`/app/uploads`). Para levantar el stack completo (MySQL + API + frontend) en local:
+
+```bash
+docker compose -f compose.dev.yml up -d --build
+curl http://localhost:4000/   # -> {"buni":"Estamos conectados uwu", ...}
+```
+
+Construir solo la imagen de la API:
+
+```bash
+docker build -t buni-api .
+```
+
+Para la guía completa de cómo levantar Buni en local con Docker (backend + frontend), consulta
+**[DEPLOY.md](./DEPLOY.md)**.
+
+---
+
 ## 📄 Licencia
 
 Este proyecto está bajo la licencia [MIT](LICENSE).

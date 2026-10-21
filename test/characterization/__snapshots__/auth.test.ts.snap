@@ -1,0 +1,286 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`POST /auth/login > (a) admin creds -> 200 admin user shape (additive isAdmin + token_hs cookie) 1`] = `
+{
+  "body": {
+    "token": "<token>",
+    "user": {
+      "email": "admin@buni.test",
+      "isAdmin": true,
+      "name": "Administrador",
+      "permissions": "***",
+      "role": "admin",
+    },
+  },
+  "status": 200,
+}
+`;
+
+exports[`POST /auth/login > (b) valid normal user -> 200 normal user shape 1`] = `
+{
+  "body": {
+    "token": "<token>",
+    "user": {
+      "email": "normal@buni.test",
+      "id": "user-0000-0000-0000-000000000001",
+      "isAdmin": false,
+      "name": "Usuario Normal",
+      "permissions": {
+        "events": {
+          "create": true,
+          "delete": false,
+          "edit": false,
+          "view": true,
+        },
+        "forms": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "programs": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "roles": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "scenery": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "users": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+      },
+      "role": "coordinador",
+    },
+  },
+  "status": 200,
+}
+`;
+
+exports[`POST /auth/login > (c) wrong password -> 401 Credenciales inválidas 1`] = `
+{
+  "body": {
+    "error": "Credenciales inválidas",
+  },
+  "status": 401,
+}
+`;
+
+exports[`POST /auth/login > (d) missing fields -> 400 Email y contraseña son requeridos 1`] = `
+{
+  "body": {
+    "error": "Email y contraseña son requeridos",
+  },
+  "status": 400,
+}
+`;
+
+exports[`POST /auth/login > (e) unknown email -> 401 Credenciales inválidas (approved change i, Phase 4) 1`] = `
+{
+  "body": {
+    "error": "Credenciales inválidas",
+  },
+  "status": 401,
+}
+`;
+
+exports[`POST /auth/login > (f) known user with deleted role -> current 500 (stays 500) 1`] = `500`;
+
+exports[`POST /auth/logout > invalid token -> 401 Token inválido 1`] = `
+{
+  "body": {
+    "error": "Token inválido",
+  },
+  "status": 401,
+}
+`;
+
+exports[`POST /auth/logout > no token -> 400 Token no proporcionado 1`] = `
+{
+  "body": {
+    "error": "Token no proporcionado",
+  },
+  "status": 400,
+}
+`;
+
+exports[`POST /auth/logout > valid token -> 200 Sesión cerrada exitosamente (clears token_hs — approved change vii) 1`] = `
+{
+  "body": {
+    "message": "Sesión cerrada exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`POST /auth/test (CreateSession) > admin creds -> 200 {token,user:{email,role,permissions}} (no name/id) 1`] = `
+{
+  "body": {
+    "token": "<token>",
+    "user": {
+      "email": "admin@buni.test",
+      "permissions": "***",
+      "role": "admin",
+    },
+  },
+  "status": 200,
+}
+`;
+
+exports[`POST /auth/test (CreateSession) > missing fields -> 400 Email y contraseña son requeridos 1`] = `
+{
+  "body": {
+    "error": "Email y contraseña son requeridos",
+  },
+  "status": 400,
+}
+`;
+
+exports[`POST /auth/test (CreateSession) > non-admin -> 401 Credenciales inválidas 1`] = `
+{
+  "body": {
+    "error": "Credenciales inválidas",
+  },
+  "status": 401,
+}
+`;
+
+exports[`POST /auth/verify > (a) malformed-format token -> 401 Token malformado (bespoke regex branch) 1`] = `
+{
+  "body": {
+    "error": "Token malformado",
+  },
+  "status": 401,
+}
+`;
+
+exports[`POST /auth/verify > (b) valid-signature non-admin token with deleted role -> 200 permissions:null (no crash) 1`] = `
+{
+  "body": {
+    "user": {
+      "email": "sinrol@buni.test",
+      "name": "Usuario Sin Rol",
+      "permissions": null,
+      "role": "rol-huerfano",
+    },
+    "valid": true,
+  },
+  "status": 200,
+}
+`;
+
+exports[`POST /auth/verify > expired token -> 401 Token expirado 1`] = `
+{
+  "body": {
+    "error": "Token expirado",
+  },
+  "status": 401,
+}
+`;
+
+exports[`POST /auth/verify > invalid JWT (bad signature) -> 401 Token inválido 1`] = `
+{
+  "body": {
+    "error": "Token inválido",
+  },
+  "status": 401,
+}
+`;
+
+exports[`POST /auth/verify > no token -> 401 Token no proporcionado 1`] = `
+{
+  "body": {
+    "error": "Token no proporcionado",
+  },
+  "status": 401,
+}
+`;
+
+exports[`POST /auth/verify > non-string token -> 401 Formato de token inválido 1`] = `
+{
+  "body": {
+    "error": "Formato de token inválido",
+  },
+  "status": 401,
+}
+`;
+
+exports[`POST /auth/verify > valid admin token -> 200 {valid,user} 1`] = `
+{
+  "body": {
+    "user": {
+      "email": "admin@buni.test",
+      "name": "Administrador",
+      "permissions": "***",
+      "role": "admin",
+    },
+    "valid": true,
+  },
+  "status": 200,
+}
+`;
+
+exports[`POST /auth/verify > valid normal token -> 200 {valid,user} 1`] = `
+{
+  "body": {
+    "user": {
+      "email": "normal@buni.test",
+      "name": "Usuario Normal",
+      "permissions": {
+        "events": {
+          "create": true,
+          "delete": false,
+          "edit": false,
+          "view": true,
+        },
+        "forms": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "programs": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "roles": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "scenery": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "users": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+      },
+      "role": "coordinador",
+    },
+    "valid": true,
+  },
+  "status": 200,
+}
+`;

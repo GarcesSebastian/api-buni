@@ -1,0 +1,35 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`GET /files/upload/:name (Phase 3: authed + sanitized) > authorized missing file -> 404 (Phase 3: no longer a path-leaking 500) 1`] = `
+{
+  "body": {
+    "error": "File not found",
+  },
+  "status": 404,
+}
+`;
+
+exports[`GET /files/upload/:name (Phase 3: authed + sanitized) > authorized path traversal attempt -> 400 (confinement) 1`] = `400`;
+
+exports[`GET /files/upload/:name (Phase 3: authed + sanitized) > authorized valid seeded .xlsx -> 200 bare sheet JSON (success shape preserved) 1`] = `
+{
+  "body": {
+    "Hoja1": [
+      {
+        "edad": 30,
+        "nombre": "Ana",
+      },
+    ],
+  },
+  "status": 200,
+}
+`;
+
+exports[`GET /files/upload/:name (Phase 3: authed + sanitized) > no auth -> 401 (Phase 3 hardening) 1`] = `
+{
+  "body": {
+    "error": "Token no proporcionado",
+  },
+  "status": 401,
+}
+`;

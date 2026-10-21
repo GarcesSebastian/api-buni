@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`/experimental (dev-only) > DELETE /experimental/programs -> 200 success (representative working delete) 1`] = `
+{
+  "body": {
+    "affectedRows": 1,
+    "message": "Programas eliminados correctamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`/experimental (dev-only) > DELETE /experimental/scenery -> 200 working delete (approved change iv: scenery->sceneries) 1`] = `
+{
+  "body": {
+    "affectedRows": 1,
+    "message": "Escenarios eliminados correctamente",
+  },
+  "status": 200,
+}
+`;

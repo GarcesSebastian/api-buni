@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`rate limiter config (pinned) > 429 body shape is {message: "..."} verbatim 1`] = `
+{
+  "message": "Muchas peticiones, por favor intente mas tarde.",
+}
+`;
+
+exports[`rate limiter config (pinned) > global window/max come from env (defaults 15 min / 100) 1`] = `
+{
+  "max": 100,
+  "windowMinutes": 15,
+}
+`;

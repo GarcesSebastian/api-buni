@@ -1,0 +1,177 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`roles endpoints > DELETE /roles/:id (unused role) -> 200 {message,deletedRole} 1`] = `
+{
+  "body": {
+    "deletedRole": true,
+    "message": "Rol eliminado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`roles endpoints > DELETE /roles/:id in use -> 400 utilizando 1`] = `
+{
+  "body": {
+    "error": "No se puede eliminar el rol porque hay usuarios que lo están utilizando",
+  },
+  "status": 400,
+}
+`;
+
+exports[`roles endpoints > DELETE /roles/:id not found -> 400 no encontrado 1`] = `
+{
+  "body": {
+    "error": "Rol no encontrado",
+  },
+  "status": 400,
+}
+`;
+
+exports[`roles endpoints > GET /roles -> bare array 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<created_at>",
+      "id": "role-0000-0000-0000-000000000001",
+      "name": "coordinador",
+      "permissions": {
+        "events": {
+          "create": true,
+          "delete": false,
+          "edit": false,
+          "view": true,
+        },
+        "forms": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "programs": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "roles": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "scenery": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "users": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+      },
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`roles endpoints > POST /roles -> 201 {message,data} 1`] = `
+{
+  "body": {
+    "data": {
+      "id": "<uuid>",
+      "name": "nuevo-rol",
+      "permissions": {
+        "events": {
+          "create": true,
+          "delete": false,
+          "edit": false,
+          "view": true,
+        },
+        "forms": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "programs": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "roles": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "scenery": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+        "users": {
+          "create": false,
+          "delete": false,
+          "edit": false,
+          "view": false,
+        },
+      },
+    },
+    "message": "Rol creado exitosamente",
+  },
+  "status": 201,
+}
+`;
+
+exports[`roles endpoints > POST /roles duplicate name -> current 500 Ya existe un rol con ese nombre (preserved) 1`] = `
+{
+  "body": {
+    "error": "Ya existe un rol con ese nombre",
+  },
+  "status": 500,
+}
+`;
+
+exports[`roles endpoints > POST /roles missing fields -> 400 Se requieren nombre y permisos 1`] = `
+{
+  "body": {
+    "error": "Se requieren nombre y permisos",
+  },
+  "status": 400,
+}
+`;
+
+exports[`roles endpoints > PUT /roles/:id -> 200 {message,data:true} 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Rol actualizado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`roles endpoints > PUT /roles/:id duplicate name -> current 500 (preserved) 1`] = `
+{
+  "body": {
+    "error": "Ya existe un rol con ese nombre",
+  },
+  "status": 500,
+}
+`;
+
+exports[`roles endpoints > PUT /roles/:id not found -> 400 no encontrado 1`] = `
+{
+  "body": {
+    "error": "Rol no encontrado",
+  },
+  "status": 400,
+}
+`;

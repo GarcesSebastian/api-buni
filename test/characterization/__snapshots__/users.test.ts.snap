@@ -1,0 +1,71 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`users endpoints > DELETE /users/:id -> 200 {message,data:true} 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Usuario eliminado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`users endpoints > GET /users -> bare array (no password), admin 1`] = `
+{
+  "body": [
+    {
+      "email": "normal@buni.test",
+      "id": "user-0000-0000-0000-000000000001",
+      "name": "Usuario Normal",
+      "role_id": "role-0000-0000-0000-000000000001",
+    },
+    {
+      "email": "sinrol@buni.test",
+      "id": "user-0000-0000-0000-000000000002",
+      "name": "Usuario Sin Rol",
+      "role_id": null,
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`users endpoints > GET /users/data -> aggregate {events,programs,scenery,users,forms,roles} 1`] = `
+[
+  "events",
+  "forms",
+  "programs",
+  "roles",
+  "scenery",
+  "users",
+]
+`;
+
+exports[`users endpoints > POST /users -> 201 {message,data} 1`] = `
+{
+  "body": {
+    "data": {
+      "email": "nuevo@buni.test",
+      "id": "<uuid>",
+      "name": "Nuevo Usuario",
+      "role_id": "role-0000-0000-0000-000000000001",
+      "roles": {
+        "id": "role-0000-0000-0000-000000000001",
+        "key": "roles",
+      },
+    },
+    "message": "Usuario creado exitosamente",
+  },
+  "status": 201,
+}
+`;
+
+exports[`users endpoints > PUT /users/:id -> 200 {message,data:true} 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Usuario actualizado exitosamente",
+  },
+  "status": 200,
+}
+`;

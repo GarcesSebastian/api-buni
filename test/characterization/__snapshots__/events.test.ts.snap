@@ -1,0 +1,369 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`GET /events > bare array; one full event shape + zero-submission event present with [] arrays 1`] = `
+{
+  "body": [
+    {
+      "assists": [],
+      "cupos": "-1",
+      "formAssists": {
+        "id": "form-0000-0000-0000-000000000002",
+        "name": "Formulario de asistencia",
+      },
+      "formConfig": {
+        "assists": {
+          "enabled": false,
+          "endDate": "",
+          "startDate": "",
+        },
+        "inscriptions": {
+          "enabled": false,
+          "endDate": "",
+          "startDate": "",
+        },
+      },
+      "formInscriptions": {
+        "id": "form-0000-0000-0000-000000000001",
+        "name": "Formulario de inscripción",
+      },
+      "horarioFin": "<timestamp>",
+      "horarioInicio": "<timestamp>",
+      "id": "evnt-0000-0000-0000-000000000001",
+      "inscriptions": [],
+      "nombre": "Evento Ilimitado",
+      "organizador": "Organizador Buni",
+      "programs": {
+        "id": "prog-0000-0000-0000-000000000001",
+        "name": "Programa A",
+      },
+      "scenery": {
+        "id": "scen-0000-0000-0000-000000000001",
+        "name": "Escenario A",
+      },
+      "state": "active",
+    },
+    {
+      "assists": [],
+      "cupos": "2",
+      "formAssists": {
+        "id": "form-0000-0000-0000-000000000002",
+        "name": "Formulario de asistencia",
+      },
+      "formConfig": {
+        "assists": {
+          "enabled": false,
+          "endDate": "",
+          "startDate": "",
+        },
+        "inscriptions": {
+          "enabled": false,
+          "endDate": "",
+          "startDate": "",
+        },
+      },
+      "formInscriptions": {
+        "id": "form-0000-0000-0000-000000000001",
+        "name": "Formulario de inscripción",
+      },
+      "horarioFin": "<timestamp>",
+      "horarioInicio": "<timestamp>",
+      "id": "evnt-0000-0000-0000-000000000002",
+      "inscriptions": [],
+      "nombre": "Evento Limitado 2",
+      "organizador": "Organizador Buni",
+      "programs": {
+        "id": "prog-0000-0000-0000-000000000001",
+        "name": "Programa A",
+      },
+      "scenery": {
+        "id": "scen-0000-0000-0000-000000000001",
+        "name": "Escenario A",
+      },
+      "state": "active",
+    },
+    {
+      "assists": [],
+      "cupos": "0",
+      "formAssists": {
+        "id": "form-0000-0000-0000-000000000002",
+        "name": "Formulario de asistencia",
+      },
+      "formConfig": {
+        "assists": {
+          "enabled": false,
+          "endDate": "",
+          "startDate": "",
+        },
+        "inscriptions": {
+          "enabled": false,
+          "endDate": "",
+          "startDate": "",
+        },
+      },
+      "formInscriptions": {
+        "id": "form-0000-0000-0000-000000000001",
+        "name": "Formulario de inscripción",
+      },
+      "horarioFin": "<timestamp>",
+      "horarioInicio": "<timestamp>",
+      "id": "evnt-0000-0000-0000-000000000003",
+      "inscriptions": [],
+      "nombre": "Evento Cupo Cero",
+      "organizador": "Organizador Buni",
+      "programs": {
+        "id": "prog-0000-0000-0000-000000000001",
+        "name": "Programa A",
+      },
+      "scenery": {
+        "id": "scen-0000-0000-0000-000000000001",
+        "name": "Escenario A",
+      },
+      "state": "active",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`GET /events/:id > existing -> bare object 1`] = `
+{
+  "body": {
+    "assists": [],
+    "cupos": "-1",
+    "formAssists": {
+      "id": "form-0000-0000-0000-000000000002",
+      "name": "Formulario de asistencia",
+    },
+    "formConfig": {
+      "assists": {
+        "enabled": false,
+        "endDate": "",
+        "startDate": "",
+      },
+      "inscriptions": {
+        "enabled": false,
+        "endDate": "",
+        "startDate": "",
+      },
+    },
+    "formInscriptions": {
+      "id": "form-0000-0000-0000-000000000001",
+      "name": "Formulario de inscripción",
+    },
+    "horarioFin": "<timestamp>",
+    "horarioInicio": "<timestamp>",
+    "id": "evnt-0000-0000-0000-000000000001",
+    "inscriptions": [],
+    "nombre": "Evento Ilimitado",
+    "organizador": "Organizador Buni",
+    "programs": {
+      "id": "prog-0000-0000-0000-000000000001",
+      "name": "Programa A",
+    },
+    "scenery": {
+      "id": "scen-0000-0000-0000-000000000001",
+      "name": "Escenario A",
+    },
+    "state": "active",
+  },
+  "status": 200,
+}
+`;
+
+exports[`GET /events/:id > missing -> current 500 (events never 404) 1`] = `500`;
+
+exports[`PUT /events/:id/forms (quota + submissions) > (a) inscription into cupos=-1 -> 200 data:true, appended in order 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Formulario actualizado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`PUT /events/:id/forms (quota + submissions) > (a) inscription into cupos=-1 -> 200 data:true, appended in order 2`] = `
+[
+  {
+    "nombre": "Persona 1",
+  },
+]
+`;
+
+exports[`PUT /events/:id/forms (quota + submissions) > (b) fill cupos=2 to 2, then 3rd -> 500 No hay cupos disponibles 1`] = `
+{
+  "body": {
+    "error": "No hay cupos disponibles",
+  },
+  "status": 500,
+}
+`;
+
+exports[`PUT /events/:id/forms (quota + submissions) > (c) cupos=0 inscription -> 500 No hay cupos disponibles 1`] = `
+{
+  "body": {
+    "error": "No hay cupos disponibles",
+  },
+  "status": 500,
+}
+`;
+
+exports[`PUT /events/:id/forms (quota + submissions) > (d) assists submission (no cupos check) -> appended 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Formulario actualizado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`PUT /events/:id/forms (quota + submissions) > (d) assists submission (no cupos check) -> appended 2`] = `
+[
+  {
+    "nombre": "A1",
+  },
+]
+`;
+
+exports[`PUT /events/:id/forms (quota + submissions) > (e) unknown typeForm -> 200 no-op success, arrays unchanged 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Formulario actualizado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`events CRUD happy paths > DELETE /events/:id -> 200 data:true 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Evento eliminado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`events CRUD happy paths > POST /events -> 201 {message,data} 1`] = `
+{
+  "body": {
+    "data": {
+      "assists": [],
+      "cupos": "10",
+      "formAssists": {
+        "id": "form-0000-0000-0000-000000000002",
+      },
+      "formConfig": {
+        "assists": {
+          "enabled": false,
+          "endDate": "",
+          "startDate": "",
+        },
+        "inscriptions": {
+          "enabled": false,
+          "endDate": "",
+          "startDate": "",
+        },
+      },
+      "formInscriptions": {
+        "id": "form-0000-0000-0000-000000000001",
+      },
+      "horarioFin": "<timestamp>",
+      "horarioInicio": "<timestamp>",
+      "id": "<uuid>",
+      "inscriptions": [],
+      "nombre": "Nuevo Evento",
+      "organizador": "Org",
+      "programs": {
+        "id": "prog-0000-0000-0000-000000000001",
+      },
+      "scenery": {
+        "id": "scen-0000-0000-0000-000000000001",
+      },
+      "state": "active",
+    },
+    "message": "Evento creado exitosamente",
+  },
+  "status": 201,
+}
+`;
+
+exports[`events CRUD happy paths > POST /events cupos:"" -> current 400/throw 1`] = `500`;
+
+exports[`events CRUD happy paths > POST /events cupos:"0" and cupos:"-1" -> current 201 1`] = `
+[
+  201,
+  201,
+]
+`;
+
+exports[`events CRUD happy paths > POST /events with falsy state (state:false) -> current 201 success 1`] = `201`;
+
+exports[`events CRUD happy paths > PUT /events/:id -> 200 data:true 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Evento actualizado exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`events CRUD happy paths > PUT /events/:id/form-config -> 200 data:true 1`] = `
+{
+  "body": {
+    "data": true,
+    "message": "Configuración del formulario actualizada exitosamente",
+  },
+  "status": 200,
+}
+`;
+
+exports[`events permission chain (verifyToken runs first) > (a) no Authorization header -> 401 Token no proporcionado 1`] = `
+{
+  "body": {
+    "error": "Token no proporcionado",
+  },
+  "status": 401,
+}
+`;
+
+exports[`events permission chain (verifyToken runs first) > (b) invalid token -> 401 Token inválido 1`] = `
+{
+  "body": {
+    "error": "Token inválido",
+  },
+  "status": 401,
+}
+`;
+
+exports[`events permission chain (verifyToken runs first) > (c) valid token lacking events.create (PUT -> edit denied) -> 401 message 1`] = `
+{
+  "body": {
+    "error": "No tienes permisos para actualizar eventos",
+  },
+  "status": 401,
+}
+`;
+
+exports[`events permission chain (verifyToken runs first) > (d) valid token whose role row is missing (deleted role) -> 401 (approved change ii) 1`] = `
+{
+  "body": {
+    "error": "No tienes permisos para crear eventos",
+  },
+  "status": 401,
+}
+`;
+
+exports[`events permission chain (verifyToken runs first) > (e) admin token -> reaches controller (201) 1`] = `201`;
+
+exports[`events permission chain (verifyToken runs first) > DELETE denied message for custom role 1`] = `
+{
+  "body": {
+    "error": "No tienes permisos para eliminar eventos",
+  },
+  "status": 401,
+}
+`;
